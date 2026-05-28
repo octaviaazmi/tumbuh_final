@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keranjang — Tumbuh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest:#1C3A2F;--forest-light:#2A5242;--mint:#5DCAA5;--mint-light:#9FE1CB;--mint-pale:#D4F4EA;
+      --sage:#E1F5EE;--amber:#FAC775;--amber-dark:#EF9F27;--offwhite:#F5F2EC;--white:#FFFFFF;
+      --charcoal:#2C2C2A;--charcoal-lt:#444441;--gray:#B4B2A9;--gray-lt:#D8D6CE;
+      --border:rgba(28,58,47,0.08);--border-md:rgba(28,58,47,0.14);
+      --shadow-sm:0 2px 8px rgba(28,58,47,.07);--shadow-md:0 8px 24px rgba(28,58,47,.10);
+      --shadow-lg:0 20px 48px rgba(28,58,47,.14);
+      --font-d:'Playfair Display',serif;--font-b:'DM Sans',sans-serif;--nav-h:72px;
+      --r-sm:8px;--r-md:12px;--r-lg:20px;--r-xl:28px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font-b);background:var(--offwhite);color:var(--charcoal);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}
+    button{cursor:pointer;font-family:var(--font-b);border:none;background:none;}
+
+    /* CURSOR */
+    .cursor{width:12px;height:12px;background:var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;}
+
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 4rem;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;transition:all .35s;}
+    .navbar.scrolled{background:rgba(245,242,236,.94);backdrop-filter:blur(18px);box-shadow:0 1px 0 var(--border);}
+    .nav-logo{font-family:var(--font-d);font-size:1.6rem;font-weight:700;color:var(--forest);letter-spacing:-.02em;}
+    .nav-logo .dot{color:var(--mint);}
+    .nav-links{display:flex;align-items:center;gap:2.25rem;}
+    .nav-links a{font-size:.875rem;color:var(--charcoal-lt);position:relative;transition:color .2s;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--mint);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+    .nav-links a:hover{color:var(--forest);}
+    .nav-links a:hover::after{transform:scaleX(1);}
+    .nav-actions{display:flex;align-items:center;gap:1rem;}
+    .nav-cart{position:relative;width:38px;height:38px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;}
+    .nav-cart:hover{background:var(--mint-pale);}
+    .nav-cart-count{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--amber-dark);color:var(--white);font-size:.6rem;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .nav-btn{padding:.55rem 1.3rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.85rem;font-weight:500;transition:all .2s;}
+    .nav-btn:hover{background:var(--forest-light);transform:translateY(-1px);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .3s;}
+    .mobile-nav{display:none;position:fixed;inset:0;background:var(--forest);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:1.75rem;}
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:var(--font-d);font-size:2.2rem;font-weight:700;color:rgba(255,255,255,.85);opacity:0;transform:translateY(20px);animation:fadeUp .45s ease forwards;}
+    .mobile-nav a:nth-child(2){animation-delay:.05s}.mobile-nav a:nth-child(3){animation-delay:.12s}.mobile-nav a:nth-child(4){animation-delay:.19s}.mobile-nav a:nth-child(5){animation-delay:.26s}.mobile-nav a:nth-child(6){animation-delay:.33s}
+    .mobile-nav a:hover{color:var(--mint);}
+    .mobile-close{position:absolute;top:1.25rem;right:1.5rem;color:var(--white);font-size:1.8rem;opacity:.7;}
+
+    /* PAGE HEADER */
+    .page-header{background:var(--forest);padding:calc(var(--nav-h)+3.5rem) 4rem 4.5rem;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,var(--forest-light),var(--forest) 65%);}
+    .ph-decor{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-size:16rem;opacity:.05;pointer-events:none;user-select:none;}
+    .ph-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto;}
+    .breadcrumb{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:1.25rem;}
+    .breadcrumb a{color:rgba(255,255,255,.55);transition:color .2s;}
+    .breadcrumb a:hover{color:var(--mint-light);}
+    .breadcrumb span{color:rgba(255,255,255,.25);}
+    .page-header h1{font-family:var(--font-d);font-size:clamp(2rem,4vw,3.2rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:-.03em;}
+    .page-header h1 em{font-style:italic;color:var(--mint);}
+
+    /* CHECKOUT STEPS */
+    .steps-bar{background:var(--white);border-bottom:1px solid var(--border);}
+    .steps-inner{max-width:1280px;margin:0 auto;padding:.85rem 4rem;display:flex;align-items:center;gap:0;}
+    .step{display:flex;align-items:center;gap:.5rem;font-size:.82rem;padding:.3rem .85rem;border-radius:var(--r-full);}
+    .step.active{background:var(--sage);color:var(--forest);font-weight:600;}
+    .step.done{color:var(--mint);font-weight:500;}
+    .step.upcoming{color:var(--gray);}
+    .step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+    .step.active .step-num{background:var(--forest);color:var(--white);}
+    .step.done .step-num{background:var(--mint);color:var(--white);}
+    .step.upcoming .step-num{background:var(--gray-lt);color:var(--gray);}
+    .step-line{flex:1;height:1.5px;background:var(--gray-lt);margin:0 .5rem;max-width:60px;}
+    .step-line.done{background:var(--mint);}
+
+    /* MAIN */
+    .main{max-width:1280px;margin:0 auto;padding:3.5rem 4rem 6rem;}
+    .cart-layout{display:grid;grid-template-columns:1fr 360px;gap:3rem;align-items:start;}
+
+    /* CART SECTION */
+    .cart-section{}
+    .cart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+    .cart-title{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:var(--forest);}
+    .btn-clear{padding:.4rem .9rem;border:1.5px solid #FAECEC;border-radius:var(--r-full);font-size:.78rem;font-weight:500;color:#C0392B;cursor:pointer;background:#FEECEC;transition:all .18s;}
+    .btn-clear:hover{background:#FDD8D8;}
+
+    /* CART ITEMS */
+    .cart-list{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
+    .cart-item{display:grid;grid-template-columns:80px 1fr auto;gap:1.25rem;align-items:center;padding:1.5rem;border-bottom:1px solid var(--border);transition:background .18s;}
+    .cart-item:last-child{border-bottom:none;}
+    .cart-item:hover{background:#FAFAF8;}
+    .cart-item.removing{opacity:0;transform:translateX(20px);transition:all .3s ease;}
+    .item-thumb{width:80px;height:80px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:2.4rem;flex-shrink:0;}
+    .item-info{}
+    .item-name{font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--forest);margin-bottom:.2rem;}
+    .item-variant{font-size:.78rem;color:var(--gray);margin-bottom:.6rem;}
+    .item-price-row{display:flex;align-items:center;gap:.75rem;}
+    .item-price{font-size:1rem;font-weight:600;color:var(--charcoal);}
+    .item-price-old{font-size:.78rem;color:var(--gray);text-decoration:line-through;}
+    .qty-wrap{display:flex;align-items:center;gap:.4rem;background:var(--offwhite);border-radius:var(--r-full);padding:.25rem .6rem;margin-top:.65rem;width:fit-content;}
+    .qty-btn{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:var(--charcoal-lt);transition:all .18s;background:none;border:none;cursor:pointer;}
+    .qty-btn:hover{background:var(--white);color:var(--forest);}
+    .qty-num{font-size:.88rem;font-weight:500;min-width:22px;text-align:center;}
+    .item-actions{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
+    .item-subtotal{font-size:.9rem;font-weight:600;color:var(--forest);}
+    .btn-remove{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--gray);background:none;border:none;cursor:pointer;transition:all .18s;}
+    .btn-remove:hover{background:#FEECEC;color:#C0392B;}
+
+    /* PROMO CODE */
+    .promo-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.5rem;margin-top:1.25rem;}
+    .promo-label{font-size:.82rem;font-weight:500;color:var(--charcoal);margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem;}
+    .promo-row{display:flex;gap:.75rem;}
+    .promo-input{flex:1;padding:.72rem 1rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);font-family:var(--font-b);font-size:.875rem;color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;text-transform:uppercase;}
+    .promo-input:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(93,202,165,.15);}
+    .promo-input::placeholder{text-transform:none;color:var(--gray);}
+    .btn-apply{padding:.72rem 1.35rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.85rem;font-weight:500;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;}
+    .btn-apply:hover{background:var(--forest-light);}
+    .promo-msg{font-size:.78rem;margin-top:.65rem;display:none;align-items:center;gap:.4rem;}
+    .promo-msg.success{color:#0F7A57;display:flex;}
+    .promo-msg.error{color:#C0392B;display:flex;}
+    .promo-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem;}
+    .promo-chip{padding:.28rem .75rem;border:1.5px dashed var(--border-md);border-radius:var(--r-full);font-size:.72rem;color:var(--charcoal-lt);cursor:pointer;transition:all .18s;}
+    .promo-chip:hover{border-color:var(--mint);color:var(--forest);}
+
+    /* SUGGESTIONS */
+    .suggest-wrap{margin-top:2rem;}
+    .suggest-title{font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--forest);margin-bottom:1rem;}
+    .suggest-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:none;}
+    .suggest-scroll::-webkit-scrollbar{display:none;}
+    .suggest-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;flex-shrink:0;width:160px;transition:all .25s;display:block;color:inherit;}
+    .suggest-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+    .suggest-img{height:100px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;}
+    .suggest-body{padding:.75rem;}
+    .suggest-name{font-size:.82rem;font-weight:500;color:var(--forest);margin-bottom:.3rem;line-height:1.3;}
+    .suggest-price{font-size:.78rem;color:var(--mint);font-weight:500;}
+    .suggest-add{width:100%;margin-top:.5rem;padding:.4rem;background:var(--sage);border-radius:var(--r-full);font-size:.75rem;font-weight:500;color:var(--forest);cursor:pointer;border:none;transition:all .18s;}
+    .suggest-add:hover{background:var(--forest);color:var(--white);}
+
+    /* ORDER SUMMARY */
+    .summary-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.75rem;position:sticky;top:calc(var(--nav-h)+1.5rem);}
+    .summary-title{font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--forest);margin-bottom:1.5rem;}
+    .summary-row{display:flex;align-items:center;justify-content:space-between;font-size:.875rem;padding:.5rem 0;}
+    .summary-label{color:var(--charcoal-lt);}
+    .summary-val{font-weight:500;color:var(--charcoal);}
+    .summary-val.green{color:var(--mint);font-weight:600;}
+    .summary-val.red{color:#C0392B;}
+    .summary-divider{height:1px;background:var(--border);margin:.6rem 0;}
+    .summary-total-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0 0;}
+    .summary-total-label{font-size:1rem;font-weight:600;color:var(--charcoal);}
+    .summary-total-val{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--forest);}
+    .btn-checkout{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:1rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.95rem;font-weight:500;cursor:pointer;border:none;transition:all .3s;margin-top:1.25rem;position:relative;overflow:hidden;}
+    .btn-checkout::before{content:'';position:absolute;inset:0;background:var(--mint);transform:translateX(-102%);transition:transform .4s;z-index:0;}
+    .btn-checkout:hover::before{transform:translateX(0);}
+    .btn-checkout:hover{color:var(--forest);transform:translateY(-1px);box-shadow:var(--shadow-md);}
+    .btn-checkout span{position:relative;z-index:1;}
+    .btn-continue{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.75rem;background:transparent;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);font-size:.85rem;color:var(--charcoal-lt);cursor:pointer;transition:all .2s;margin-top:.6rem;}
+    .btn-continue:hover{border-color:var(--forest);color:var(--forest);}
+    .security-items{display:flex;flex-direction:column;gap:.45rem;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);}
+    .security-item{font-size:.75rem;color:var(--charcoal-lt);display:flex;align-items:center;gap:.5rem;}
+
+    /* EMPTY CART */
+    .empty-cart{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;gap:1.25rem;}
+    .empty-cart.show{display:flex;}
+    .empty-icon{font-size:5rem;opacity:.25;}
+    .empty-cart h2{font-family:var(--font-d);font-size:1.5rem;color:var(--charcoal);}
+    .empty-cart p{font-size:.9rem;color:var(--gray);}
+
+    /* FOOTER */
+    footer{background:var(--charcoal);color:var(--white);padding:5rem 4rem 2rem;}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:4rem;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:2rem;max-width:1280px;margin-left:auto;margin-right:auto;}
+    .f-logo{font-family:var(--font-d);font-size:1.9rem;font-weight:700;color:var(--white);margin-bottom:.85rem;}
+    .f-logo .dot{color:var(--mint);}
+    .f-desc{font-size:.875rem;color:rgba(255,255,255,.38);line-height:1.75;margin-bottom:1.5rem;}
+    .f-socials{display:flex;gap:.6rem;}
+    .f-social{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:rgba(255,255,255,.55);transition:all .2s;}
+    .f-social:hover{border-color:var(--mint);background:rgba(93,202,165,.1);color:var(--mint);}
+    .f-col-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1.1rem;}
+    .f-links{display:flex;flex-direction:column;gap:.7rem;}
+    .f-links a{font-size:.875rem;color:rgba(255,255,255,.55);transition:color .2s;}
+    .f-links a:hover{color:var(--mint);}
+    .f-bottom{display:flex;justify-content:space-between;align-items:center;max-width:1280px;margin:0 auto;}
+    .f-copy{font-size:.78rem;color:rgba(255,255,255,.22);}
+
+    .scroll-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--forest);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;z-index:500;opacity:0;pointer-events:none;transition:all .3s;box-shadow:var(--shadow-md);}
+    .scroll-top.visible{opacity:1;pointer-events:auto;}
+    .scroll-top:hover{background:var(--forest-light);transform:translateY(-2px);}
+    .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem;}
+    .toast{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.1rem;background:var(--charcoal);color:var(--white);border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease;border-left:3px solid var(--mint);min-width:240px;}
+    .toast.error{border-left-color:#E74C3C;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}
+
+    @media(max-width:1024px){
+      .navbar{padding:0 2rem;}.page-header{padding:calc(var(--nav-h)+2.5rem) 2rem 3.5rem;}
+      .steps-inner{padding:.85rem 2rem;}.main{padding:3rem 2rem 5rem;}
+      .cart-layout{grid-template-columns:1fr;}.summary-card{position:static;}
+      footer{padding:4rem 2rem 1.5rem;}.footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem;}
+    }
+    @media(max-width:768px){
+      .navbar{padding:0 1.25rem;}.nav-links,.nav-btn{display:none;}.hamburger{display:flex;}
+      .page-header{padding:calc(var(--nav-h)+1.75rem) 1.25rem 3rem;}.steps-inner{padding:.75rem 1.25rem;overflow-x:auto;}
+      .main{padding:2.5rem 1.25rem 5rem;}.cart-item{grid-template-columns:64px 1fr;gap:1rem;}
+      .item-actions{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center;}
+      footer{padding:3rem 1.25rem 1.25rem;}.footer-grid{grid-template-columns:1fr;gap:2rem;}
+      .f-bottom{flex-direction:column;gap:.5rem;text-align:center;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="index.html">Beranda</a>
+  <a href="04-catalog.html">Katalog</a>
+  <a href="02-articles.html">Artikel</a>
+  <a href="06-cart.html">Keranjang</a>
+  <a href="#">Akun</a>
+</div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">Tumbuh<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="04-catalog.html">Katalog</a></li>
+    <li><a href="02-articles.html">Artikel</a></li>
+    <li><a href="#">Tentang</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="06-cart.html" class="nav-cart">🛒<span class="nav-cart-count" id="cartBadge">3</span></a>
+    <a href="#" class="nav-btn">Masuk</a>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <div class="ph-decor">🛒</div>
+  <div class="ph-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Beranda</a><span>›</span>
+      <span style="color:rgba(255,255,255,.65);">Keranjang</span>
+    </div>
+    <h1>Keranjang <em>Belanja</em></h1>
+  </div>
+</header>
+
+<!-- CHECKOUT STEPS -->
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step active"><span class="step-num">1</span>Keranjang</div>
+    <div class="step-line"></div>
+    <div class="step upcoming"><span class="step-num">2</span>Pembayaran</div>
+    <div class="step-line"></div>
+    <div class="step upcoming"><span class="step-num">3</span>Konfirmasi</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="cart-layout">
+
+    <!-- LEFT: CART ITEMS -->
+    <div class="cart-section reveal">
+      <div class="cart-header">
+        <div class="cart-title" id="cartTitle">3 Item di Keranjang</div>
+        <button class="btn-clear" onclick="clearAll()">🗑 Kosongkan</button>
+      </div>
+
+      <!-- Cart list -->
+      <div class="cart-list" id="cartList">
+
+        <div class="cart-item" id="item-1" data-price="185000">
+          <div class="item-thumb" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);">🪴</div>
+          <div class="item-info">
+            <div class="item-name">Monstera Deliciosa</div>
+            <div class="item-variant">Ukuran: Medium · Indoor</div>
+            <div class="item-price-row">
+              <span class="item-price">Rp 185.000</span>
+            </div>
+            <div class="qty-wrap">
+              <button class="qty-btn" onclick="changeQty('item-1',-1)">−</button>
+              <span class="qty-num" id="qty-item-1">1</span>
+              <button class="qty-btn" onclick="changeQty('item-1',1)">+</button>
+            </div>
+          </div>
+          <div class="item-actions">
+            <span class="item-subtotal" id="sub-item-1">Rp 185.000</span>
+            <button class="btn-remove" onclick="removeItem('item-1')" title="Hapus">✕</button>
+          </div>
+        </div>
+
+        <div class="cart-item" id="item-2" data-price="72000">
+          <div class="item-thumb" style="background:linear-gradient(135deg,#E1F5EE,#5DCAA5);">🌿</div>
+          <div class="item-info">
+            <div class="item-name">Pothos Golden</div>
+            <div class="item-variant">Ukuran: Mini · Gantung</div>
+            <div class="item-price-row">
+              <span class="item-price-old">Rp 95.000</span>
+              <span class="item-price">Rp 72.000</span>
+            </div>
+            <div class="qty-wrap">
+              <button class="qty-btn" onclick="changeQty('item-2',-1)">−</button>
+              <span class="qty-num" id="qty-item-2">2</span>
+              <button class="qty-btn" onclick="changeQty('item-2',1)">+</button>
+            </div>
+          </div>
+          <div class="item-actions">
+            <span class="item-subtotal" id="sub-item-2">Rp 144.000</span>
+            <button class="btn-remove" onclick="removeItem('item-2')" title="Hapus">✕</button>
+          </div>
+        </div>
+
+        <div class="cart-item" id="item-3" data-price="55000">
+          <div class="item-thumb" style="background:linear-gradient(135deg,#FDF3E0,#FAC775);">🌵</div>
+          <div class="item-info">
+            <div class="item-name">Kaktus Saguaro Mini</div>
+            <div class="item-variant">Ukuran: Mini · Kaktus</div>
+            <div class="item-price-row">
+              <span class="item-price">Rp 55.000</span>
+            </div>
+            <div class="qty-wrap">
+              <button class="qty-btn" onclick="changeQty('item-3',-1)">−</button>
+              <span class="qty-num" id="qty-item-3">1</span>
+              <button class="qty-btn" onclick="changeQty('item-3',1)">+</button>
+            </div>
+          </div>
+          <div class="item-actions">
+            <span class="item-subtotal" id="sub-item-3">Rp 55.000</span>
+            <button class="btn-remove" onclick="removeItem('item-3')" title="Hapus">✕</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-cart" id="emptyCart">
+        <div class="empty-icon">🛒</div>
+        <h2>Keranjangmu kosong</h2>
+        <p>Yuk temukan tanaman impianmu dan mulai berbelanja!</p>
+        <a href="04-catalog.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.75rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.9rem;font-weight:500;margin-top:.5rem;transition:all .2s;">🌿 Jelajahi Katalog</a>
+      </div>
+
+      <!-- Promo code -->
+      <div class="promo-wrap" id="promoWrap">
+        <div class="promo-label">🎟 Kode Promo</div>
+        <div class="promo-row">
+          <input type="text" class="promo-input" id="promoInput" placeholder="Masukkan kode promo...">
+          <button class="btn-apply" onclick="applyPromo()">Terapkan</button>
+        </div>
+        <div class="promo-msg" id="promoMsg"></div>
+        <div class="promo-chips">
+          <span class="promo-chip" onclick="useChip('TUMBUH10')">TUMBUH10</span>
+          <span class="promo-chip" onclick="useChip('GRATIS20')">GRATIS20</span>
+          <span class="promo-chip" onclick="useChip('NEWUSER')">NEWUSER</span>
+        </div>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="suggest-wrap" id="suggestWrap">
+        <div class="suggest-title">Mungkin Kamu Juga Suka</div>
+        <div class="suggest-scroll">
+          <a href="05-product-detail.html" class="suggest-card">
+            <div class="suggest-img" style="background:linear-gradient(135deg,#E8F4F8,#9FD6E8);">🪴</div>
+            <div class="suggest-body"><div class="suggest-name">Calathea Orbifolia</div><div class="suggest-price">Rp 175.000</div><button class="suggest-add" onclick="event.preventDefault();showToast('Calathea ditambahkan! 🌿')">+ Keranjang</button></div>
+          </a>
+          <a href="05-product-detail.html" class="suggest-card">
+            <div class="suggest-img" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);">🌱</div>
+            <div class="suggest-body"><div class="suggest-name">Lidah Mertua</div><div class="suggest-price">Rp 95.000</div><button class="suggest-add" onclick="event.preventDefault();showToast('Lidah Mertua ditambahkan! 🌿')">+ Keranjang</button></div>
+          </a>
+          <a href="05-product-detail.html" class="suggest-card">
+            <div class="suggest-img" style="background:linear-gradient(135deg,#F5EBF8,#D4A8E0);">🌸</div>
+            <div class="suggest-body"><div class="suggest-name">Anthurium Pink</div><div class="suggest-price">Rp 220.000</div><button class="suggest-add" onclick="event.preventDefault();showToast('Anthurium ditambahkan! 🌿')">+ Keranjang</button></div>
+          </a>
+          <a href="05-product-detail.html" class="suggest-card">
+            <div class="suggest-img" style="background:linear-gradient(135deg,#FDF3E0,#EF9F27);">🌵</div>
+            <div class="suggest-body"><div class="suggest-name">Sukulen Echeveria</div><div class="suggest-price">Rp 38.000</div><button class="suggest-add" onclick="event.preventDefault();showToast('Sukulen ditambahkan! 🌿')">+ Keranjang</button></div>
+          </a>
+          <a href="05-product-detail.html" class="suggest-card">
+            <div class="suggest-img" style="background:linear-gradient(135deg,#E1F5EE,#1D9E75);">🌿</div>
+            <div class="suggest-body"><div class="suggest-name">ZZ Plant</div><div class="suggest-price">Rp 145.000</div><button class="suggest-add" onclick="event.preventDefault();showToast('ZZ Plant ditambahkan! 🌿')">+ Keranjang</button></div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: ORDER SUMMARY -->
+    <div class="summary-card reveal reveal-d1">
+      <div class="summary-title">Ringkasan Pesanan</div>
+
+      <div class="summary-row">
+        <span class="summary-label" id="subtotalLabel">Subtotal (4 item)</span>
+        <span class="summary-val" id="subtotalVal">Rp 384.000</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Ongkos Kirim</span>
+        <span class="summary-val" id="shippingVal">Rp 25.000</span>
+      </div>
+      <div class="summary-row" id="discountRow" style="display:none;">
+        <span class="summary-label">Diskon Promo</span>
+        <span class="summary-val red" id="discountVal">- Rp 0</span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-total-row">
+        <span class="summary-total-label">Total</span>
+        <span class="summary-total-val" id="totalVal">Rp 409.000</span>
+      </div>
+
+      <a href="07-checkout.html">
+        <button class="btn-checkout"><span>Lanjut ke Pembayaran →</span></button>
+      </a>
+      <a href="04-catalog.html">
+        <button class="btn-continue">← Lanjut Belanja</button>
+      </a>
+
+      <div class="security-items">
+        <div class="security-item">🔒 Pembayaran 100% aman & terenkripsi</div>
+        <div class="security-item">📦 Garansi tanaman tiba dalam kondisi segar</div>
+        <div class="security-item">↩️ Pengembalian mudah dalam 7 hari</div>
+        <div class="security-item">🌿 Packaging ramah lingkungan</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo">Tumbuh<span class="dot">.</span></div>
+      <p class="f-desc">Menghadirkan keindahan alam ke dalam ruang hidupmu. Tanaman hias pilihan, dikirim dengan cinta ke seluruh Indonesia.</p>
+      <div class="f-socials"><a class="f-social" href="#">📷</a><a class="f-social" href="#">🐦</a><a class="f-social" href="#">💼</a><a class="f-social" href="#">▶️</a></div>
+    </div>
+    <div><div class="f-col-title">Produk</div><ul class="f-links"><li><a href="04-catalog.html">Katalog</a></li><li><a href="05-product-detail.html">Detail Produk</a></li></ul></div>
+    <div><div class="f-col-title">Informasi</div><ul class="f-links"><li><a href="02-articles.html">Blog</a></li><li><a href="#">Tentang Kami</a></li></ul></div>
+    <div><div class="f-col-title">Bantuan</div><ul class="f-links"><li><a href="#">FAQ</a></li><li><a href="#">Pengiriman</a></li><li><a href="#">Pengembalian</a></li></ul></div>
+  </div>
+  <div class="f-bottom">
+    <div class="f-copy">© 2026 Tumbuh. Semua hak dilindungi.</div>
+    <div class="f-copy">Dibuat dengan 🌿 di Indonesia</div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop">↑</button>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // ── CURSOR ──
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function anim(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
+  });
+
+  // ── NAVBAR ──
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',()=>{
+    navbar.classList.toggle('scrolled',scrollY>60);
+    document.getElementById('scrollTop').classList.toggle('visible',scrollY>400);
+  },{passive:true});
+
+  // ── MOBILE NAV ──
+  const mobileNav=document.getElementById('mobileNav');
+  document.getElementById('hamburger').addEventListener('click',()=>{mobileNav.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('mobileClose').addEventListener('click',()=>{mobileNav.classList.remove('open');document.body.style.overflow='';});
+  document.getElementById('scrollTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  // ── SCROLL REVEAL ──
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // ── TOAST ──
+  function showToast(msg,type='success'){
+    const tw=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className=`toast${type==='error'?' error':''}`;
+    t.innerHTML=`<span>${type==='error'?'❌':'✅'}</span><span>${msg}</span>`;
+    tw.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3000);
+  }
+
+  // ── CART STATE ──
+  const items = {
+    'item-1': { price: 185000, qty: 1 },
+    'item-2': { price: 72000,  qty: 2 },
+    'item-3': { price: 55000,  qty: 1 },
+  };
+  const SHIPPING = 25000;
+  let promoDiscount = 0;
+
+  function fmt(n){ return 'Rp '+n.toLocaleString('id-ID'); }
+
+  function recalc(){
+    const ids = Object.keys(items).filter(id => document.getElementById(id));
+    const subtotal = ids.reduce((s,id)=>s + items[id].price * items[id].qty, 0);
+    const total = subtotal + SHIPPING - promoDiscount;
+    const itemCount = ids.reduce((s,id)=>s + items[id].qty, 0);
+
+    document.getElementById('subtotalLabel').textContent = `Subtotal (${itemCount} item)`;
+    document.getElementById('subtotalVal').textContent   = fmt(subtotal);
+    document.getElementById('totalVal').textContent      = fmt(Math.max(0, total));
+    document.getElementById('cartTitle').textContent     = `${ids.length} Item di Keranjang`;
+    document.getElementById('cartBadge').textContent     = itemCount;
+
+    if(promoDiscount > 0){
+      document.getElementById('discountRow').style.display='flex';
+      document.getElementById('discountVal').textContent = '- '+fmt(promoDiscount);
+    }
+
+    if(ids.length === 0){
+      document.getElementById('cartList').style.display = 'none';
+      document.getElementById('promoWrap').style.display = 'none';
+      document.getElementById('suggestWrap').style.display = 'none';
+      document.getElementById('emptyCart').classList.add('show');
+      document.querySelector('.cart-header').style.display = 'none';
+      document.getElementById('subtotalVal').textContent = fmt(0);
+      document.getElementById('totalVal').textContent = fmt(0);
+    }
+  }
+
+  function changeQty(id, d){
+    const el = items[id];
+    if(!el) return;
+    el.qty = Math.max(1, el.qty + d);
+    document.getElementById('qty-'+id).textContent = el.qty;
+    document.getElementById('sub-'+id).textContent = fmt(el.price * el.qty);
+    recalc();
+  }
+
+  function removeItem(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.add('removing');
+    setTimeout(()=>{ el.remove(); delete items[id]; recalc(); }, 320);
+    showToast('Item dihapus dari keranjang', 'error');
+  }
+
+  function clearAll(){
+    Object.keys(items).forEach(id => {
+      const el = document.getElementById(id);
+      if(el){ el.classList.add('removing'); setTimeout(()=>el.remove(),320); }
+      delete items[id];
+    });
+    setTimeout(recalc, 400);
+    showToast('Keranjang dikosongkan', 'error');
+  }
+
+  // ── PROMO ──
+  const promoCodes = {
+    'TUMBUH10': { type:'pct', val:10, label:'Diskon 10%' },
+    'GRATIS20':  { type:'flat', val:20000, label:'Potongan Rp 20.000' },
+    'NEWUSER':  { type:'pct', val:15, label:'Diskon 15% (Pengguna Baru)' },
+  };
+
+  function useChip(code){
+    document.getElementById('promoInput').value = code;
+    applyPromo();
+  }
+
+  function applyPromo(){
+    const code = document.getElementById('promoInput').value.trim().toUpperCase();
+    const msg  = document.getElementById('promoMsg');
+    msg.className = 'promo-msg';
+    msg.textContent = '';
+
+    if(!code){ msg.className='promo-msg error'; msg.textContent='⚠️ Masukkan kode promo terlebih dahulu.'; return; }
+
+    const promo = promoCodes[code];
+    if(!promo){ msg.className='promo-msg error'; msg.textContent='❌ Kode promo tidak valid atau sudah kadaluarsa.'; return; }
+
+    const subtotal = Object.keys(items).filter(id=>document.getElementById(id)).reduce((s,id)=>s+items[id].price*items[id].qty,0);
+    promoDiscount = promo.type === 'pct' ? Math.round(subtotal * promo.val/100) : promo.val;
+    msg.className = 'promo-msg success';
+    msg.textContent = `✓ Kode "${code}" berhasil! ${promo.label} (${fmt(promoDiscount)})`;
+    recalc();
+    showToast(`Promo ${promo.label} diterapkan! 🎉`);
+  }
+
+  // ── INIT ──
+  recalc();
+</script>
+</body>
+</html>

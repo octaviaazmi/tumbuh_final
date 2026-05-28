@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tumbuh. — Tanaman Hias Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1C3A2F;
+    --forest-light: #2A5242;
+    --mint: #5DCAA5;
+    --mint-light: #9FE1CB;
+    --sage: #E1F5EE;
+    --amber: #FAC775;
+    --amber-dark: #EF9F27;
+    --offwhite: #F5F2EC;
+    --charcoal: #2C2C2A;
+    --charcoal-light: #444441;
+    --gray: #B4B2A9;
+    --white: #FFFFFF;
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--offwhite);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--mint);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--mint);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.12s ease;
+    opacity: 0.6;
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.4s ease;
+  }
+  nav.scrolled {
+    background: rgba(245,242,236,0.92);
+    backdrop-filter: blur(16px);
+    padding: 1rem 4rem;
+    border-bottom: 1px solid rgba(28,58,47,0.08);
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--forest);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--mint); }
+  .nav-links {
+    display: flex; gap: 2.5rem; list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--charcoal-light);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -3px; left: 0; right: 0;
+    height: 1px; background: var(--mint);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--forest); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-actions { display: flex; align-items: center; gap: 1.25rem; }
+  .btn-nav {
+    padding: 0.6rem 1.4rem;
+    background: var(--forest);
+    color: var(--white);
+    border: none; border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    transition: all 0.25s ease;
+  }
+  .btn-nav:hover { background: var(--forest-light); transform: translateY(-1px); }
+  .nav-icon { width: 20px; height: 20px; cursor: pointer; color: var(--charcoal); text-decoration: none; display: flex; align-items: center; }
+
+  /* ── HAMBURGER ── */
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--charcoal); border-radius: 2px; transition: all 0.3s ease; }
+
+  /* ── MOBILE NAV ── */
+  .mobile-nav {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--forest);
+    z-index: 200;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--white);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.4s ease forwards;
+  }
+  .mobile-nav a:nth-child(1) { animation-delay: 0.1s; }
+  .mobile-nav a:nth-child(2) { animation-delay: 0.18s; }
+  .mobile-nav a:nth-child(3) { animation-delay: 0.26s; }
+  .mobile-nav a:nth-child(4) { animation-delay: 0.34s; }
+  .mobile-nav a:nth-child(5) { animation-delay: 0.42s; }
+  .mobile-nav a:hover { color: var(--mint); }
+  .mobile-close {
+    position: absolute; top: 1.5rem; right: 2rem;
+    color: var(--white); font-size: 2rem; cursor: pointer; background: none; border: none;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8rem 4rem 4rem;
+    position: relative; z-index: 2;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--sage);
+    color: var(--forest);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    width: fit-content;
+    margin-bottom: 2rem;
+    opacity: 0; animation: fadeUp 0.8s 0.2s ease forwards;
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--mint);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 5.5vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--forest);
+    margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp 0.8s 0.4s ease forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--mint);
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--charcoal-light);
+    line-height: 1.7;
+    max-width: 400px;
+    margin-bottom: 2.5rem;
+    opacity: 0; animation: fadeUp 0.8s 0.6s ease forwards;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; align-items: center;
+    opacity: 0; animation: fadeUp 0.8s 0.8s ease forwards;
+  }
+  .btn-primary {
+    padding: 0.9rem 2rem;
+    background: var(--forest);
+    color: var(--white);
+    border: none; border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--mint);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary:hover { color: var(--forest); }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(28,58,47,0.2); }
+  .btn-secondary {
+    padding: 0.9rem 2rem;
+    background: transparent;
+    color: var(--forest);
+    border: 1.5px solid var(--forest);
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  .btn-secondary:hover { background: var(--forest); color: var(--white); transform: translateY(-2px); }
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-top: 3rem;
+    opacity: 0; animation: fadeUp 0.8s 1.0s ease forwards;
+  }
+  .hero-stat-num {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--forest);
+    display: block;
+  }
+  .hero-stat-label {
+    font-size: 0.8rem;
+    color: var(--gray);
+    font-weight: 400;
+  }
+
+  .hero-right {
+    position: relative;
+    background: var(--forest);
+    overflow: hidden;
+    opacity: 0; animation: fadeIn 1.2s 0.3s ease forwards;
+  }
+  .hero-right-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, #2A5242 0%, #1C3A2F 60%);
+  }
+  .hero-plant-card {
+    position: absolute;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    padding: 1rem 1.25rem;
+    transition: transform 0.3s ease;
+  }
+  .hero-plant-card:hover { transform: translateY(-4px); }
+  .plant-emoji { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+  .plant-name { font-size: 0.85rem; font-weight: 500; color: var(--white); }
+  .plant-price { font-size: 0.75rem; color: var(--mint-light); margin-top: 2px; }
+  .card-1 { bottom: 12%; left: 8%; animation: float 6s ease-in-out infinite; }
+  .card-2 { top: 20%; right: 8%; animation: float 6s 2s ease-in-out infinite; }
+  .card-3 { top: 50%; left: 30%; animation: float 6s 4s ease-in-out infinite; }
+
+  .hero-big-plant {
+    position: absolute;
+    font-size: 18rem;
+    bottom: -2rem; left: 50%; transform: translateX(-50%);
+    opacity: 0.15;
+    animation: sway 8s ease-in-out infinite;
+    user-select: none;
+    pointer-events: none;
+  }
+  .hero-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(93,202,165,0.15);
+  }
+  .circle-1 { width: 300px; height: 300px; top: 10%; left: 10%; animation: rotate 30s linear infinite; }
+  .circle-2 { width: 500px; height: 500px; top: -10%; left: -10%; animation: rotate 50s linear infinite reverse; }
+  .hero-leaf {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.3;
+    animation: floatLeaf 10s ease-in-out infinite;
+    user-select: none;
+  }
+  .leaf-1 { top: 15%; left: 20%; animation-delay: 0s; }
+  .leaf-2 { top: 60%; right: 15%; animation-delay: 3s; }
+  .leaf-3 { top: 35%; left: 55%; animation-delay: 6s; }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    background: var(--forest);
+    padding: 1rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 20s linear infinite;
+    width: max-content;
+  }
+  .marquee-item {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0 2rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mint-light);
+    white-space: nowrap;
+  }
+  .marquee-dot { width: 5px; height: 5px; background: var(--amber); border-radius: 50%; flex-shrink: 0; }
+
+  /* ── INTRO SECTION ── */
+  .section-intro {
+    padding: 7rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 6rem;
+    align-items: center;
+  }
+  .section-tag {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mint);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .section-tag::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--mint);
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--forest);
+  }
+  .section-title em { font-style: italic; color: var(--mint); }
+  .intro-right p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--charcoal-light);
+    margin-bottom: 1.5rem;
+  }
+  .intro-features {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;
+  }
+  .intro-feature {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 1rem;
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid rgba(28,58,47,0.06);
+    transition: all 0.3s ease;
+  }
+  .intro-feature:hover { border-color: var(--mint); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(28,58,47,0.06); }
+  .feature-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .feature-title { font-size: 0.875rem; font-weight: 500; color: var(--forest); margin-bottom: 2px; }
+  .feature-desc { font-size: 0.775rem; color: var(--gray); line-height: 1.5; }
+
+  /* ── PRODUCTS ── */
+  .section-products { padding: 2rem 4rem 7rem; }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 3rem;
+  }
+  .link-all {
+    font-size: 0.875rem;
+    color: var(--forest);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 0.3rem;
+    border-bottom: 1px solid var(--forest);
+    padding-bottom: 2px;
+    transition: gap 0.2s ease;
+  }
+  .link-all:hover { gap: 0.6rem; }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  .product-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(28,58,47,0.06);
+    cursor: pointer;
+    transition: all 0.35s ease;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(28,58,47,0.12); }
+  .product-card:hover .product-img-emoji { transform: scale(1.1) rotate(-5deg); }
+  .product-img {
+    height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .product-img-emoji { font-size: 5rem; transition: transform 0.4s ease; display: block; }
+  .product-bg-1 { background: linear-gradient(135deg, #E1F5EE, #9FE1CB); }
+  .product-bg-2 { background: linear-gradient(135deg, #FAEEDA, #FAC775); }
+  .product-bg-3 { background: linear-gradient(135deg, #E1F5EE, #5DCAA5); }
+  .product-bg-4 { background: linear-gradient(135deg, #F1EFE8, #D3D1C7); }
+  .product-badge {
+    position: absolute; top: 1rem; left: 1rem;
+    font-size: 0.65rem; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: 100px;
+  }
+  .badge-new { background: var(--forest); color: var(--white); }
+  .badge-hot { background: var(--amber); color: var(--charcoal); }
+  .badge-sale { background: #FAECE7; color: #993C1D; }
+  .product-body { padding: 1.25rem; }
+  .product-cat {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mint);
+    margin-bottom: 0.4rem;
+  }
+  .product-name {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--forest);
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+  }
+  .product-latin { font-size: 0.75rem; color: var(--gray); font-style: italic; margin-bottom: 0.75rem; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 1rem; font-weight: 500; color: var(--charcoal); }
+  .product-price-old { font-size: 0.75rem; color: var(--gray); text-decoration: line-through; margin-right: 0.3rem; }
+  .btn-cart {
+    width: 34px; height: 34px;
+    background: var(--sage);
+    border: none; border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    transition: all 0.25s ease;
+  }
+  .btn-cart:hover { background: var(--forest); }
+
+  /* ── CATEGORIES ── */
+  .section-categories { padding: 2rem 4rem 7rem; }
+  .categories-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 280px 280px;
+    gap: 1.25rem;
+  }
+  .cat-card {
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex; align-items: flex-end;
+    transition: transform 0.35s ease;
+  }
+  .cat-card:hover { transform: scale(0.985); }
+  .cat-card:hover .cat-bg-emoji { transform: scale(1.1); }
+  .cat-1 { grid-row: 1 / 3; background: var(--forest); }
+  .cat-2 { background: #FAC775; }
+  .cat-3 { background: var(--sage); }
+  .cat-4 { background: #2A5242; }
+  .cat-5 { background: #F5F2EC; border: 1px solid rgba(28,58,47,0.1); }
+  .cat-bg-emoji {
+    position: absolute;
+    font-size: 8rem;
+    right: 1rem; bottom: 3rem;
+    opacity: 0.25;
+    transition: transform 0.4s ease;
+    user-select: none;
+    pointer-events: none;
+  }
+  .cat-1 .cat-bg-emoji { font-size: 14rem; right: 0; bottom: 1rem; opacity: 0.15; }
+  .cat-content { padding: 1.75rem; position: relative; z-index: 1; }
+  .cat-label {
+    font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .cat-1 .cat-label, .cat-4 .cat-label { color: var(--mint-light); }
+  .cat-2 .cat-label { color: #633806; }
+  .cat-3 .cat-label, .cat-5 .cat-label { color: var(--forest); }
+  .cat-title {
+    font-family: var(--font-display);
+    font-weight: 700; line-height: 1.1;
+  }
+  .cat-1 .cat-title { font-size: 2.4rem; color: var(--white); }
+  .cat-2 .cat-title, .cat-3 .cat-title, .cat-4 .cat-title, .cat-5 .cat-title { font-size: 1.4rem; }
+  .cat-2 .cat-title { color: #2C2C2A; }
+  .cat-3 .cat-title { color: var(--forest); }
+  .cat-4 .cat-title { color: var(--white); }
+  .cat-5 .cat-title { color: var(--forest); }
+  .cat-count {
+    display: inline-block; margin-top: 0.6rem;
+    font-size: 0.78rem; padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+  }
+  .cat-1 .cat-count { background: rgba(255,255,255,0.1); color: var(--mint-light); }
+  .cat-2 .cat-count { background: rgba(28,58,47,0.08); color: #633806; }
+  .cat-3 .cat-count, .cat-5 .cat-count { background: rgba(28,58,47,0.08); color: var(--forest); }
+  .cat-4 .cat-count { background: rgba(255,255,255,0.1); color: var(--mint-light); }
+
+  /* ── ARTICLES ── */
+  .section-articles { padding: 2rem 4rem 7rem; }
+  .articles-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .article-card {
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    background: var(--white);
+    border: 1px solid rgba(28,58,47,0.06);
+    transition: all 0.3s ease;
+  }
+  .article-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(28,58,47,0.1); }
+  .article-img {
+    height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .article-card:not(.article-featured) .article-img { height: 160px; font-size: 4rem; }
+  .article-img-bg1 { background: linear-gradient(135deg, #E1F5EE, #9FE1CB); }
+  .article-img-bg2 { background: linear-gradient(135deg, #FAEEDA, #EF9F27); }
+  .article-img-bg3 { background: linear-gradient(135deg, #E1F5EE, #1D9E75); }
+  .article-body { padding: 1.5rem; }
+  .article-cat {
+    font-size: 0.68rem; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--mint); margin-bottom: 0.5rem;
+  }
+  .article-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--forest);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .article-featured .article-title { font-size: 1.4rem; }
+  .article-card:not(.article-featured) .article-title { font-size: 1rem; }
+  .article-excerpt {
+    font-size: 0.85rem;
+    color: var(--charcoal-light);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .article-card:not(.article-featured) .article-excerpt { display: none; }
+  .article-meta { display: flex; align-items: center; gap: 0.75rem; }
+  .article-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--sage);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+  }
+  .article-author { font-size: 0.78rem; color: var(--charcoal-light); font-weight: 500; }
+  .article-date { font-size: 0.72rem; color: var(--gray); }
+
+  /* ── TESTIMONIAL ── */
+  .section-testimonial {
+    background: var(--forest);
+    padding: 7rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .testimonial-bg-text {
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: 20rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.03);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+  .testimonial-header { text-align: center; margin-bottom: 4rem; }
+  .testimonial-header .section-tag { justify-content: center; }
+  .testimonial-header .section-tag::before { display: none; }
+  .testimonial-header .section-title { color: var(--white); }
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; position: relative; z-index: 1;
+  }
+  .testimonial-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+  }
+  .testimonial-card:hover { background: rgba(255,255,255,0.09); transform: translateY(-4px); }
+  .testi-stars { color: var(--amber); font-size: 0.9rem; margin-bottom: 1rem; letter-spacing: 0.1em; }
+  .testi-text {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+  .testi-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--sage);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .testi-name { font-size: 0.875rem; font-weight: 500; color: var(--white); }
+  .testi-loc { font-size: 0.75rem; color: var(--mint-light); }
+
+  /* ── CTA BANNER ── */
+  .section-cta {
+    padding: 7rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 4rem;
+    background: var(--sage);
+    position: relative; overflow: hidden;
+  }
+  .cta-bg-decor {
+    position: absolute; right: -80px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 28rem;
+    opacity: 0.06;
+    user-select: none; pointer-events: none;
+  }
+  .cta-content { position: relative; z-index: 1; }
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3vw, 3rem);
+    font-weight: 800;
+    color: var(--forest);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .cta-sub { font-size: 1rem; color: var(--charcoal-light); max-width: 400px; line-height: 1.6; }
+  .cta-actions { display: flex; gap: 1rem; flex-shrink: 0; position: relative; z-index: 1; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    color: var(--white);
+    padding: 5rem 4rem 2rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 4rem;
+    padding-bottom: 4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 2rem;
+  }
+  .footer-brand-name {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+  .footer-brand-name span { color: var(--mint); }
+  .footer-desc {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .footer-socials { display: flex; gap: 0.75rem; }
+  .social-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: var(--white);
+  }
+  .social-btn:hover { border-color: var(--mint); background: rgba(93,202,165,0.1); }
+  .footer-col-title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 1.25rem;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+  .footer-links a {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--mint); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
+
+  /* ── SCROLL TO TOP ── */
+  .scroll-top {
+    position: fixed; bottom: 2rem; right: 2rem;
+    width: 44px; height: 44px;
+    background: var(--forest);
+    color: var(--white);
+    border: none; border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    z-index: 50;
+    opacity: 0; pointer-events: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(28,58,47,0.3);
+  }
+  .scroll-top.visible { opacity: 1; pointer-events: auto; }
+  .scroll-top:hover { background: var(--forest-light); transform: translateY(-2px); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes sway {
+    0%, 100% { transform: translateX(-50%) rotate(-2deg); }
+    50% { transform: translateX(-50%) rotate(2deg); }
+  }
+  @keyframes floatLeaf {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33% { transform: translateY(-8px) rotate(5deg); }
+    66% { transform: translateY(4px) rotate(-3deg); }
+  }
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .articles-grid { grid-template-columns: 1fr 1fr; }
+    .article-featured { grid-column: 1 / 3; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    .categories-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .cat-1 { grid-row: auto; }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1.25rem 1.5rem; }
+    nav.scrolled { padding: 1rem 1.5rem; }
+    .nav-links, .nav-actions .btn-nav { display: none; }
+    .hamburger { display: flex; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { padding: 7rem 1.5rem 3rem; }
+    .hero-right { height: 320px; }
+    .hero-stats { gap: 1.5rem; }
+    .section-intro { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
+    .section-products, .section-categories, .section-articles { padding: 2rem 1.5rem 4rem; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .categories-grid { grid-template-columns: 1fr; }
+    .articles-grid { grid-template-columns: 1fr; }
+    .article-featured { grid-column: auto; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .section-testimonial { padding: 4rem 1.5rem; }
+    .section-cta { flex-direction: column; padding: 4rem 1.5rem; }
+    .cta-actions { flex-direction: column; width: 100%; }
+    .cta-actions .btn-primary, .cta-actions .btn-secondary { justify-content: center; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    footer { padding: 3rem 1.5rem 1.5rem; }
+    .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
+    .intro-features { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="index.html">Beranda</a>
+  <a href="04-catalog.html">Katalog</a>
+  <a href="02-articles.html">Artikel</a>
+  <a href="06-cart.html">Keranjang</a>
+  <a href="#">Akun</a>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">Tumbuh<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="04-catalog.html">Katalog</a></li>
+    <li><a href="02-articles.html">Artikel</a></li>
+    <li><a href="#">Tentang</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="06-cart.html" class="nav-icon" title="Keranjang">🛒</a>
+    <a href="#" class="btn-nav"><span>Masuk</span></a>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Pengiriman ke seluruh Indonesia
+    </div>
+    <h1 class="hero-title">
+      Hadirkan<br><em>Alam</em><br>ke Rumahmu
+    </h1>
+    <p class="hero-sub">
+      Tanaman hias pilihan untuk ruang hidup yang lebih segar, sehat, dan estetik. Dikurasi langsung dari petani terbaik.
+    </p>
+    <div class="hero-actions">
+      <a href="04-catalog.html" class="btn-primary">
+        <span>Jelajahi Katalog</span>
+        <span>→</span>
+      </a>
+      <a href="02-articles.html" class="btn-secondary">Baca Artikel</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <span class="hero-stat-num">500+</span>
+        <span class="hero-stat-label">Jenis Tanaman</span>
+      </div>
+      <div>
+        <span class="hero-stat-num">12k+</span>
+        <span class="hero-stat-label">Pelanggan Puas</span>
+      </div>
+      <div>
+        <span class="hero-stat-num">4.9★</span>
+        <span class="hero-stat-label">Rating Toko</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-right-bg"></div>
+    <div class="hero-circle circle-1"></div>
+    <div class="hero-circle circle-2"></div>
+    <div class="hero-big-plant">🌿</div>
+    <div class="hero-leaf leaf-1">🍃</div>
+    <div class="hero-leaf leaf-2">🌱</div>
+    <div class="hero-leaf leaf-3">🪴</div>
+    <div class="hero-plant-card card-1">
+      <span class="plant-emoji">🪴</span>
+      <div class="plant-name">Monstera Deliciosa</div>
+      <div class="plant-price">Rp 185.000</div>
+    </div>
+    <div class="hero-plant-card card-2">
+      <span class="plant-emoji">🌵</span>
+      <div class="plant-name">Kaktus Mini</div>
+      <div class="plant-price">Rp 45.000</div>
+    </div>
+    <div class="hero-plant-card card-3">
+      <span class="plant-emoji">🌸</span>
+      <div class="plant-name">Anthurium Pink</div>
+      <div class="plant-price">Rp 220.000</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="marquee-dot"></span> Tanaman Indoor</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Tanaman Outdoor</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Kaktus & Sukulen</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Tanaman Gantung</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Pot & Aksesori</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Pupuk Organik</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Media Tanam</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Tanaman Indoor</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Tanaman Outdoor</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Kaktus & Sukulen</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Tanaman Gantung</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Pot & Aksesori</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Pupuk Organik</div>
+    <div class="marquee-item"><span class="marquee-dot"></span> Media Tanam</div>
+  </div>
+</div>
+
+<!-- INTRO -->
+<section class="section-intro">
+  <div class="reveal">
+    <p class="section-tag">Kenapa Tumbuh.</p>
+    <h2 class="section-title">Lebih dari<br>sekadar <em>toko</em><br>tanaman</h2>
+  </div>
+  <div class="intro-right reveal reveal-delay-2">
+    <p>Kami percaya setiap sudut ruangan berhak mendapat sentuhan hijau yang tepat. Bukan hanya menjual tanaman — kami membantu kamu menemukan tanaman yang <em>pas</em> untuk gaya hidup dan ruangan kamu.</p>
+    <p>Setiap tanaman dikurasi, dirawat, dan dikirim dengan penuh perhatian agar tiba dalam kondisi terbaik.</p>
+    <div class="intro-features">
+      <div class="intro-feature">
+        <span class="feature-icon">🌱</span>
+        <div>
+          <div class="feature-title">Dikurasi Langsung</div>
+          <div class="feature-desc">Dipilih dari petani terpercaya di seluruh Indonesia</div>
+        </div>
+      </div>
+      <div class="intro-feature">
+        <span class="feature-icon">📦</span>
+        <div>
+          <div class="feature-title">Packaging Aman</div>
+          <div class="feature-desc">Dikemas khusus agar tanaman tiba selamat</div>
+        </div>
+      </div>
+      <div class="intro-feature">
+        <span class="feature-icon">📖</span>
+        <div>
+          <div class="feature-title">Panduan Perawatan</div>
+          <div class="feature-desc">Tips merawat tanaman dari para ahli kami</div>
+        </div>
+      </div>
+      <div class="intro-feature">
+        <span class="feature-icon">♻️</span>
+        <div>
+          <div class="feature-title">Ramah Lingkungan</div>
+          <div class="feature-desc">Packaging biodegradable untuk bumi yang lebih baik</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="section-products">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-tag">Produk Unggulan</p>
+      <h2 class="section-title">Tanaman <em>Terlaris</em></h2>
+    </div>
+    <a href="04-catalog.html" class="link-all">Lihat Semua →</a>
+  </div>
+  <div class="products-grid">
+    <a href="05-product-detail.html" class="product-card reveal reveal-delay-1">
+      <div class="product-img product-bg-1">
+        <span class="product-badge badge-hot">🔥 Terlaris</span>
+        <span class="product-img-emoji">🪴</span>
+      </div>
+      <div class="product-body">
+        <div class="product-cat">Indoor</div>
+        <div class="product-name">Monstera Deliciosa</div>
+        <div class="product-latin">Monstera deliciosa</div>
+        <div class="product-footer">
+          <div class="product-price">Rp 185.000</div>
+          <button class="btn-cart">🛒</button>
+        </div>
+      </div>
+    </a>
+    <a href="05-product-detail.html" class="product-card reveal reveal-delay-2">
+      <div class="product-img product-bg-2">
+        <span class="product-badge badge-new">✨ Baru</span>
+        <span class="product-img-emoji">🌵</span>
+      </div>
+      <div class="product-body">
+        <div class="product-cat">Kaktus</div>
+        <div class="product-name">Kaktus Saguaro Mini</div>
+        <div class="product-latin">Carnegiea gigantea</div>
+        <div class="product-footer">
+          <div class="product-price">Rp 55.000</div>
+          <button class="btn-cart">🛒</button>
+        </div>
+      </div>
+    </a>
+    <a href="05-product-detail.html" class="product-card reveal reveal-delay-3">
+      <div class="product-img product-bg-3">
+        <span class="product-badge badge-sale">💚 Diskon</span>
+        <span class="product-img-emoji">🌿</span>
+      </div>
+      <div class="product-body">
+        <div class="product-cat">Gantung</div>
+        <div class="product-name">Pothos Golden</div>
+        <div class="product-latin">Epipremnum aureum</div>
+        <div class="product-footer">
+          <div>
+            <span class="product-price-old">Rp 95.000</span>
+            <span class="product-price">Rp 72.000</span>
+          </div>
+          <button class="btn-cart">🛒</button>
+        </div>
+      </div>
+    </a>
+    <a href="05-product-detail.html" class="product-card reveal reveal-delay-4">
+      <div class="product-img product-bg-4">
+        <span class="product-img-emoji">🌸</span>
+      </div>
+      <div class="product-body">
+        <div class="product-cat">Bunga</div>
+        <div class="product-name">Anthurium Pink</div>
+        <div class="product-latin">Anthurium andraeanum</div>
+        <div class="product-footer">
+          <div class="product-price">Rp 220.000</div>
+          <button class="btn-cart">🛒</button>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section-categories">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-tag">Koleksi Kami</p>
+      <h2 class="section-title">Temukan <em>Kategori</em><br>yang Kamu Suka</h2>
+    </div>
+  </div>
+  <div class="categories-grid reveal">
+    <a href="04-catalog.html" class="cat-card cat-1">
+      <span class="cat-bg-emoji">🌿</span>
+      <div class="cat-content">
+        <div class="cat-label">Koleksi Utama</div>
+        <div class="cat-title">Tanaman<br>Indoor</div>
+        <span class="cat-count">120+ produk</span>
+      </div>
+    </a>
+    <a href="04-catalog.html" class="cat-card cat-2">
+      <span class="cat-bg-emoji">☀️</span>
+      <div class="cat-content">
+        <div class="cat-label">Outdoor</div>
+        <div class="cat-title">Taman & Balkon</div>
+        <span class="cat-count">85+ produk</span>
+      </div>
+    </a>
+    <a href="04-catalog.html" class="cat-card cat-3">
+      <span class="cat-bg-emoji">🌵</span>
+      <div class="cat-content">
+        <div class="cat-label">Low Maintenance</div>
+        <div class="cat-title">Kaktus & Sukulen</div>
+        <span class="cat-count">60+ produk</span>
+      </div>
+    </a>
+    <a href="04-catalog.html" class="cat-card cat-4">
+      <span class="cat-bg-emoji">🪴</span>
+      <div class="cat-content">
+        <div class="cat-label">Dekorasi</div>
+        <div class="cat-title">Pot & Aksesori</div>
+        <span class="cat-count">200+ produk</span>
+      </div>
+    </a>
+    <a href="04-catalog.html" class="cat-card cat-5">
+      <span class="cat-bg-emoji">🌱</span>
+      <div class="cat-content">
+        <div class="cat-label">Starter Pack</div>
+        <div class="cat-title">Pemula Banget</div>
+        <span class="cat-count">40+ produk</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section class="section-articles">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-tag">Dari Blog Kami</p>
+      <h2 class="section-title">Tips & <em>Inspirasi</em></h2>
+    </div>
+    <a href="02-articles.html" class="link-all">Semua Artikel →</a>
+  </div>
+  <div class="articles-grid">
+    <a href="03-article-detail.html" class="article-card article-featured reveal">
+      <div class="article-img article-img-bg1">🌿</div>
+      <div class="article-body">
+        <div class="article-cat">Perawatan</div>
+        <div class="article-title">Panduan Lengkap Merawat Monstera Agar Tumbuh Subur dan Cepat Besar</div>
+        <div class="article-excerpt">Monstera adalah salah satu tanaman hias paling populer — tapi banyak yang belum tahu cara perawatan yang benar. Artikel ini akan memandu kamu langkah demi langkah.</div>
+        <div class="article-meta">
+          <div class="article-avatar">🧑</div>
+          <div>
+            <div class="article-author">Rina Sari</div>
+            <div class="article-date">28 April 2026</div>
+          </div>
+        </div>
+      </div>
+    </a>
+    <a href="03-article-detail.html" class="article-card reveal reveal-delay-2">
+      <div class="article-img article-img-bg2">🌵</div>
+      <div class="article-body">
+        <div class="article-cat">Tips</div>
+        <div class="article-title">5 Tanaman yang Cocok untuk Kamar Kos Tanpa Jendela</div>
+        <div class="article-meta">
+          <div class="article-avatar">👩</div>
+          <div>
+            <div class="article-author">Dewi R.</div>
+            <div class="article-date">22 April 2026</div>
+          </div>
+        </div>
+      </div>
+    </a>
+    <a href="03-article-detail.html" class="article-card reveal reveal-delay-3">
+      <div class="article-img article-img-bg3">🌱</div>
+      <div class="article-body">
+        <div class="article-cat">Inspirasi</div>
+        <div class="article-title">Tren Dekorasi Ruangan dengan Tanaman di 2026</div>
+        <div class="article-meta">
+          <div class="article-avatar">👨</div>
+          <div>
+            <div class="article-author">Bagas P.</div>
+            <div class="article-date">15 April 2026</div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section-testimonial">
+  <div class="testimonial-bg-text">Tumbuh.</div>
+  <div class="testimonial-header">
+    <p class="section-tag">Ulasan Pelanggan</p>
+    <h2 class="section-title">Kata Mereka<br>tentang Kami</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"Monsteraku tiba dalam kondisi sempurna! Packaging-nya keren banget, tanaman langsung segar. Pasti order lagi."</div>
+      <div class="testi-author">
+        <div class="testi-avatar">🌸</div>
+        <div>
+          <div class="testi-name">Aulia Rahmawati</div>
+          <div class="testi-loc">Surabaya, Jawa Timur</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"Pertama kali beli tanaman online dan langsung kapok pindah ke tempat lain. Kualitasnya top, pengiriman cepat."</div>
+      <div class="testi-author">
+        <div class="testi-avatar">🌿</div>
+        <div>
+          <div class="testi-name">Rizky Pratama</div>
+          <div class="testi-loc">Jakarta Selatan</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-3">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"Blog-nya juga informatif banget. Berasa punya mentor tanaman pribadi. Terima kasih Tumbuh!"</div>
+      <div class="testi-author">
+        <div class="testi-avatar">🪴</div>
+        <div>
+          <div class="testi-name">Sinta Maharani</div>
+          <div class="testi-loc">Bandung, Jawa Barat</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-cta">
+  <div class="cta-bg-decor">🌿</div>
+  <div class="cta-content reveal">
+    <p class="section-tag">Mulai Sekarang</p>
+    <h2 class="cta-title">Siap Bikin<br>Rumahmu<br>Lebih Hidup?</h2>
+    <p class="cta-sub">Jelajahi ratusan tanaman pilihan dan temukan yang paling cocok untuk kamu.</p>
+  </div>
+  <div class="cta-actions reveal reveal-delay-2">
+    <a href="04-catalog.html" class="btn-primary"><span>Belanja Sekarang</span> <span>→</span></a>
+    <a href="02-articles.html" class="btn-secondary">Baca Tips Merawat</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">Tumbuh<span>.</span></div>
+      <p class="footer-desc">Menghadirkan keindahan alam ke dalam ruang hidupmu. Tanaman hias pilihan, dikirim dengan cinta ke seluruh Indonesia.</p>
+      <div class="footer-socials">
+        <a class="social-btn" href="#">📷</a>
+        <a class="social-btn" href="#">🐦</a>
+        <a class="social-btn" href="#">💼</a>
+        <a class="social-btn" href="#">▶️</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Produk</div>
+      <ul class="footer-links">
+        <li><a href="04-catalog.html">Tanaman Indoor</a></li>
+        <li><a href="04-catalog.html">Tanaman Outdoor</a></li>
+        <li><a href="04-catalog.html">Kaktus & Sukulen</a></li>
+        <li><a href="04-catalog.html">Pot & Aksesori</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Informasi</div>
+      <ul class="footer-links">
+        <li><a href="02-articles.html">Blog</a></li>
+        <li><a href="#">Tentang Kami</a></li>
+        <li><a href="#">Karir</a></li>
+        <li><a href="#">Hubungi Kami</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Bantuan</div>
+      <ul class="footer-links">
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Kebijakan Pengiriman</a></li>
+        <li><a href="#">Pengembalian Barang</a></li>
+        <li><a href="#">Syarat & Ketentuan</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 Tumbuh. Semua hak dilindungi.</div>
+    <div class="footer-copy">Dibuat dengan 🌿 di Indonesia</div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop">↑</button>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+  function animateCursor() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    cursorRing.style.left = rx + 'px';
+    cursorRing.style.top = ry + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px'; cursor.style.height = '20px';
+      cursorRing.style.width = '50px'; cursorRing.style.height = '50px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px'; cursor.style.height = '12px';
+      cursorRing.style.width = '36px'; cursorRing.style.height = '36px';
+    });
+  });
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+    document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
+  });
+
+  // Scroll to top
+  document.getElementById('scrollTop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // Mobile nav
+  document.getElementById('hamburger').addEventListener('click', () => document.getElementById('mobileNav').classList.add('open'));
+  document.getElementById('mobileClose').addEventListener('click', () => document.getElementById('mobileNav').classList.remove('open'));
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Cart button animation
+  document.querySelectorAll('.btn-cart').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      btn.textContent = '✓';
+      btn.style.background = 'var(--mint)';
+      setTimeout(() => { btn.textContent = '🛒'; btn.style.background = ''; }, 1200);
+    });
+  });
+</script>
+</body>
+</html>

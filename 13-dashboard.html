@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tumbuh - Dashboard Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest:#1C3A2F;--forest-light:#2A5242;--mint:#5DCAA5;--mint-light:#9FE1CB;--mint-pale:#D4F4EA;
+      --sage:#E1F5EE;--amber:#FAC775;--amber-dark:#EF9F27;--amber-pale:#FDF3E0;--offwhite:#F5F2EC;--white:#FFFFFF;
+      --charcoal:#2C2C2A;--charcoal-lt:#444441;--gray:#B4B2A9;--gray-lt:#D8D6CE;
+      --border:rgba(28,58,47,0.08);--border-md:rgba(28,58,47,0.14);
+      --shadow-sm:0 2px 8px rgba(28,58,47,.07);--shadow-md:0 8px 24px rgba(28,58,47,.10);--shadow-lg:0 20px 48px rgba(28,58,47,.14);
+      --font-d:'Playfair Display',serif;--font-b:'DM Sans',sans-serif;
+      --sidebar-w:240px;
+      --r-sm:8px;--r-md:12px;--r-lg:20px;--r-xl:28px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font-b);background:#F0EDE7;color:var(--charcoal);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}
+    button{cursor:pointer;font-family:var(--font-b);border:none;background:none;}
+    input,select,textarea{font-family:var(--font-b);}
+
+    .cursor{width:12px;height:12px;background:var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--forest);display:flex;flex-direction:column;z-index:200;overflow-y:auto;}
+    .sidebar-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.08);}
+    .sidebar-logo-text{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--white);}
+    .sidebar-logo-text .dot{color:var(--mint);}
+    .sidebar-logo-sub{font-size:.68rem;font-weight:500;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;margin-top:.2rem;}
+    .sidebar-section{padding:.75rem 0;}
+    .sidebar-sec-label{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:.5rem 1.5rem;margin-bottom:.25rem;}
+    .sidebar-link{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.5rem;font-size:.85rem;font-weight:400;color:rgba(255,255,255,.6);transition:all .18s;border-left:3px solid transparent;cursor:pointer;}
+    .sidebar-link:hover{color:var(--white);background:rgba(255,255,255,.05);}
+    .sidebar-link.active{color:var(--mint);background:rgba(93,202,165,.1);border-left-color:var(--mint);font-weight:500;}
+    .sidebar-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0;}
+    .sidebar-badge{margin-left:auto;background:var(--amber);color:var(--charcoal);font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:var(--r-full);}
+    .sidebar-footer{margin-top:auto;padding:1.25rem 1.5rem;border-top:1px solid rgba(255,255,255,.08);}
+    .sidebar-user{display:flex;align-items:center;gap:.75rem;}
+    .sidebar-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+    .sidebar-user-name{font-size:.82rem;font-weight:500;color:var(--white);}
+    .sidebar-user-role{font-size:.7rem;color:rgba(255,255,255,.4);}
+
+    /* ── ADMIN MAIN ── */
+    .admin-main{margin-left:var(--sidebar-w);min-height:100vh;}
+
+    /* ── TOPBAR ── */
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .topbar-left{display:flex;align-items:center;gap:.75rem;}
+    .topbar-title{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:var(--forest);}
+    .topbar-breadcrumb{font-size:.78rem;color:var(--gray);display:flex;align-items:center;gap:.35rem;}
+    .topbar-breadcrumb a{color:var(--charcoal-lt);transition:color .2s;}
+    .topbar-breadcrumb a:hover{color:var(--forest);}
+    .topbar-right{display:flex;align-items:center;gap:.75rem;}
+    .topbar-btn{padding:.45rem 1rem;border-radius:var(--r-full);font-size:.8rem;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:.35rem;border:1.5px solid;}
+    .btn-ghost{border-color:var(--gray-lt);color:var(--charcoal-lt);background:none;}
+    .btn-ghost:hover{border-color:var(--forest);color:var(--forest);}
+    .btn-primary{border-color:var(--forest);background:var(--forest);color:var(--white);}
+    .btn-primary:hover{background:var(--forest-light);}
+    .notif-btn{width:36px;height:36px;border-radius:50%;background:var(--offwhite);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all .18s;position:relative;border:none;}
+    .notif-btn:hover{background:var(--sage);}
+    .notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--amber-dark);border:2px solid var(--white);}
+
+    /* ── CONTENT ── */
+    .content{padding:2rem;}
+
+    /* STAT MINI CARDS */
+    .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+    .mini-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;display:flex;align-items:center;gap:.85rem;transition:all .22s;}
+    .mini-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+    .mini-icon{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .mi-green{background:var(--sage);}
+    .mi-amber{background:var(--amber-pale);}
+    .mi-blue{background:#E8F4F8;}
+    .mi-purple{background:#F5EBF8;}
+    .mini-val{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--forest);line-height:1;}
+    .mini-label{font-size:.72rem;color:var(--gray);margin-top:.2rem;}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.85rem;margin-bottom:1.25rem;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;}
+    .toolbar-left{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;}
+    .search-wrap{position:relative;}
+    .search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none;}
+    .search-input{padding:.62rem .9rem .62rem 2.5rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);background:var(--white);font-family:var(--font-b);font-size:.82rem;color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;width:220px;}
+    .search-input:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(93,202,165,.15);}
+    .search-input::placeholder{color:var(--gray);}
+    .filter-select{padding:.6rem 1.85rem .6rem .85rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);background:var(--white);font-family:var(--font-b);font-size:.82rem;color:var(--charcoal);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23B4B2A9' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;outline:none;}
+    .filter-select:focus{border-color:var(--mint);}
+
+    /* TABLE */
+    .table-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
+    .table-header-row{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);}
+    .table-header-title{font-size:.82rem;font-weight:500;color:var(--charcoal-lt);}
+    .table-header-actions{display:flex;gap:.5rem;}
+    table{width:100%;border-collapse:collapse;}
+    thead{background:var(--offwhite);}
+    th{padding:.85rem 1.25rem;text-align:left;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);border-bottom:1px solid var(--border);white-space:nowrap;}
+    th:first-child{padding-left:1.5rem;}
+    th:last-child{padding-right:1.5rem;text-align:right;}
+    td{padding:.95rem 1.25rem;font-size:.875rem;color:var(--charcoal);border-bottom:1px solid var(--border);vertical-align:middle;}
+    td:first-child{padding-left:1.5rem;}
+    td:last-child{padding-right:1.5rem;text-align:right;}
+    tbody tr{transition:background .15s;}
+    tbody tr:hover{background:#FAFAF8;}
+    tbody tr:last-child td{border-bottom:none;}
+
+    /* Checkbox */
+    .cb{width:16px;height:16px;accent-color:var(--forest);cursor:pointer;}
+
+    /* Article thumb in table */
+    .art-thumb-wrap{display:flex;align-items:center;gap:.85rem;}
+    .art-mini-thumb{width:48px;height:48px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+    .art-mini-title{font-size:.875rem;font-weight:500;color:var(--forest);line-height:1.3;max-width:240px;}
+    .art-mini-cat{font-size:.7rem;color:var(--gray);margin-top:.15rem;}
+
+    /* Status badges */
+    .badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;font-weight:600;letter-spacing:.04em;padding:.26rem .75rem;border-radius:var(--r-full);}
+    .badge-published{background:#E6F9F2;color:#0F7A57;}
+    .badge-draft{background:var(--gray-lt);color:var(--charcoal-lt);}
+    .badge-scheduled{background:var(--amber-pale);color:#966800;}
+    .badge-featured{background:var(--mint-pale);color:var(--forest);}
+
+    /* Table actions */
+    .tbl-actions{display:flex;gap:.4rem;justify-content:flex-end;}
+    .tbl-btn{padding:.32rem .75rem;border-radius:var(--r-sm);font-size:.72rem;font-weight:500;cursor:pointer;transition:all .15s;border:none;}
+    .tbl-edit{background:var(--sage);color:var(--forest);}
+    .tbl-edit:hover{background:var(--mint-pale);}
+    .tbl-view{background:var(--offwhite);color:var(--charcoal-lt);border:1px solid var(--border-md);}
+    .tbl-view:hover{border-color:var(--forest);color:var(--forest);}
+    .tbl-delete{background:#FEECEC;color:#C0392B;}
+    .tbl-delete:hover{background:#FDD8D8;}
+
+    /* PAGINATION */
+    .table-footer{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-top:1px solid var(--border);background:var(--offwhite);}
+    .table-count{font-size:.78rem;color:var(--gray);}
+    .pagination{display:flex;align-items:center;gap:.35rem;}
+    .pg-btn{width:32px;height:32px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:500;color:var(--charcoal-lt);border:1.5px solid var(--border);background:var(--white);cursor:pointer;transition:all .15s;}
+    .pg-btn:hover{border-color:var(--forest);color:var(--forest);}
+    .pg-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest);}
+    .pg-btn.disabled{opacity:.35;pointer-events:none;}
+
+    /* MODAL: ADD/EDIT ARTICLE */
+    .modal-overlay{position:fixed;inset:0;background:rgba(28,58,47,.55);backdrop-filter:blur(6px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .modal-overlay.open{opacity:1;pointer-events:auto;}
+    .modal{background:var(--white);border-radius:var(--r-xl);max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 32px 64px rgba(28,58,47,.2);transform:translateY(24px) scale(.97);transition:transform .35s;}
+    .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--white);z-index:1;}
+    .modal-title{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:var(--forest);}
+    .modal-close{width:32px;height:32px;border-radius:50%;background:var(--offwhite);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--gray);cursor:pointer;transition:all .18s;border:none;}
+    .modal-close:hover{background:var(--sage);color:var(--forest);}
+    .modal-body{padding:2rem;}
+    .modal-footer{padding:1.25rem 2rem;border-top:1px solid var(--border);display:flex;gap:.75rem;justify-content:flex-end;background:var(--offwhite);}
+
+    /* FORM */
+    .form-group{margin-bottom:1.1rem;}
+    .form-label{display:block;font-size:.8rem;font-weight:500;color:var(--charcoal);margin-bottom:.4rem;}
+    .form-label span{color:#C0392B;}
+    .form-input,.form-select,.form-textarea{width:100%;padding:.72rem 1rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-md);font-family:var(--font-b);font-size:.875rem;color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;background:var(--white);}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(93,202,165,.15);}
+    .form-input::placeholder,.form-textarea::placeholder{color:var(--gray);}
+    .form-textarea{resize:vertical;min-height:100px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .form-hint{font-size:.72rem;color:var(--gray);margin-top:.25rem;}
+
+    /* Image upload area */
+    .upload-area{border:2px dashed var(--gray-lt);border-radius:var(--r-lg);padding:2rem;text-align:center;cursor:pointer;transition:all .2s;}
+    .upload-area:hover{border-color:var(--mint);background:var(--sage);}
+    .upload-icon{font-size:2.5rem;margin-bottom:.5rem;}
+    .upload-text{font-size:.82rem;color:var(--charcoal-lt);line-height:1.5;}
+    .upload-hint{font-size:.72rem;color:var(--gray);margin-top:.25rem;}
+
+    /* DELETE CONFIRM MODAL */
+    .del-modal{background:var(--white);border-radius:var(--r-xl);max-width:400px;width:100%;padding:2rem;text-align:center;box-shadow:0 32px 64px rgba(28,58,47,.2);transform:translateY(24px);transition:transform .35s;}
+    .modal-overlay.open .del-modal{transform:translateY(0);}
+
+    /* TOAST */
+    .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem;}
+    .toast{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.1rem;background:var(--charcoal);color:var(--white);border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease;border-left:3px solid var(--mint);min-width:240px;}
+    .toast.error{border-left-color:#E74C3C;}
+    .toast.warn{border-left-color:var(--amber-dark);}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    @media(max-width:1024px){
+      .sidebar{transform:translateX(-100%);transition:transform .3s;}
+      .sidebar.mobile-open{transform:translateX(0);}
+      .admin-main{margin-left:0;}
+      .mini-stats{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:768px){
+      .mini-stats{grid-template-columns:1fr 1fr;}
+      .content{padding:1.25rem;}
+      .toolbar{flex-direction:column;align-items:stretch;}
+      .search-input{width:100%;}
+      table{font-size:.8rem;}
+      th,td{padding:.7rem .85rem;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">Tumbuh<span class="dot">.</span></div>
+    <div class="sidebar-logo-sub">Admin Panel</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-sec-label">Menu Utama</div>
+    <a href="13-dashboard.html" class="sidebar-link"><span class="sidebar-icon">📊</span>Dashboard</a>
+    <a href="12-manage-transactions.html" class="sidebar-link"><span class="sidebar-icon">💳</span>Kelola Transaksi<span class="sidebar-badge">5</span></a>
+    <a href="10-manage-products.html" class="sidebar-link"><span class="sidebar-icon">🪴</span>Kelola Produk</a>
+    <a href="09-manage-articles.html" class="sidebar-link active"><span class="sidebar-icon">📝</span>Kelola Artikel</a>
+    <a href="11-manage-users.html" class="sidebar-link"><span class="sidebar-icon">👥</span>Kelola Pengguna</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-sec-label">Lainnya</div>
+    <a href="index.html" class="sidebar-link"><span class="sidebar-icon">🌿</span>Lihat Toko</a>
+    <a href="#" class="sidebar-link"><span class="sidebar-icon">⚙️</span>Pengaturan</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">👤</div>
+      <div>
+        <div class="sidebar-user-name">Admin Tumbuh</div>
+        <div class="sidebar-user-role">Super Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ADMIN MAIN -->
+<div class="admin-main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="notif-btn" id="sidebarToggle" style="display:none;" onclick="toggleSidebar()">☰</button>
+      <div>
+        <div class="topbar-title">Kelola Artikel</div>
+        <div class="topbar-breadcrumb">
+          <a href="13-dashboard.html">Dashboard</a><span>›</span><span>Kelola Artikel</span>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn" onclick="showToast('Tidak ada notifikasi baru','warn')">🔔<span class="notif-dot"></span></button>
+      <button class="topbar-btn btn-ghost" onclick="showToast('Artikel diekspor ke CSV 📥')">⬇ Export CSV</button>
+      <button class="topbar-btn btn-primary" onclick="openModal('addModal')">＋ Artikel Baru</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- MINI STATS -->
+    <div class="mini-stats reveal">
+      <div class="mini-card"><div class="mini-icon mi-green">📝</div><div><div class="mini-val">48</div><div class="mini-label">Total Artikel</div></div></div>
+      <div class="mini-card"><div class="mini-icon mi-blue">✅</div><div><div class="mini-val">36</div><div class="mini-label">Dipublikasikan</div></div></div>
+      <div class="mini-card"><div class="mini-icon mi-amber">⏸</div><div><div class="mini-val">8</div><div class="mini-label">Draft</div></div></div>
+      <div class="mini-card"><div class="mini-icon mi-purple">⭐</div><div><div class="mini-val">4</div><div class="mini-label">Artikel Pilihan</div></div></div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar reveal">
+      <div class="toolbar-left">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Cari artikel..." id="searchInput">
+        </div>
+        <select class="filter-select" id="filterCat">
+          <option value="">Semua Kategori</option>
+          <option value="Perawatan">Perawatan</option>
+          <option value="Tips & Trik">Tips & Trik</option>
+          <option value="Inspirasi">Inspirasi</option>
+          <option value="Panduan Pemula">Panduan Pemula</option>
+          <option value="Kaktus & Sukulen">Kaktus & Sukulen</option>
+          <option value="Outdoor">Outdoor</option>
+        </select>
+        <select class="filter-select" id="filterStatus">
+          <option value="">Semua Status</option>
+          <option value="Dipublikasikan">Dipublikasikan</option>
+          <option value="Draft">Draft</option>
+          <option value="Terjadwal">Terjadwal</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <span style="font-size:.78rem;color:var(--gray);" id="selectedCount"></span>
+        <button class="topbar-btn btn-ghost" id="bulkDeleteBtn" style="display:none;color:#C0392B;border-color:#FAECEC;" onclick="bulkDelete()">🗑 Hapus Terpilih</button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap reveal">
+      <div class="table-header-row">
+        <span class="table-header-title" id="tableCount">Menampilkan 8 artikel</span>
+        <div class="table-header-actions">
+          <button class="tbl-btn tbl-view" onclick="showToast('Tampilan diperbarui')">⚙ Kolom</button>
+        </div>
+      </div>
+      <table id="articlesTable">
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="cb" id="selectAll" onchange="toggleSelectAll()"></th>
+            <th>Artikel</th>
+            <th>Kategori</th>
+            <th>Penulis</th>
+            <th>Status</th>
+            <th>Tanggal</th>
+            <th>Pembaca</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="table-footer">
+        <span class="table-count" id="tableFootCount">1–8 dari 48 artikel</span>
+        <div class="pagination">
+          <button class="pg-btn disabled">←</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <span style="color:var(--gray);padding:0 .2rem;font-size:.8rem;">···</span>
+          <button class="pg-btn">6</button>
+          <button class="pg-btn">→</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Tambah Artikel Baru</div>
+      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Judul Artikel <span>*</span></label>
+        <input type="text" class="form-input" placeholder="Masukkan judul artikel yang menarik..." id="artTitle">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Kategori <span>*</span></label>
+          <select class="form-select" id="artCat">
+            <option value="">Pilih kategori...</option>
+            <option>Perawatan</option><option>Tips & Trik</option><option>Inspirasi</option>
+            <option>Panduan Pemula</option><option>Kaktus & Sukulen</option><option>Outdoor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Penulis <span>*</span></label>
+          <select class="form-select" id="artAuthor">
+            <option>Rina Sari</option><option>Dewi Rahayu</option><option>Bagas Pratama</option>
+            <option>Laila Nur</option><option>Tim Tumbuh.</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ringkasan / Excerpt <span>*</span></label>
+        <textarea class="form-textarea" placeholder="Tulis ringkasan singkat artikel (maks. 160 karakter)..." id="artExcerpt" maxlength="160"></textarea>
+        <div class="form-hint">Ditampilkan di halaman daftar artikel</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Konten Artikel <span>*</span></label>
+        <textarea class="form-textarea" style="min-height:160px;" placeholder="Tulis konten artikel di sini..." id="artContent"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gambar Utama</label>
+        <div class="upload-area" onclick="showToast('Fitur upload gambar segera hadir 🖼️','warn')">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">Klik atau drag & drop gambar di sini</div>
+          <div class="upload-hint">PNG, JPG, WEBP · Maks. 5MB · Rasio 16:9 direkomendasikan</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Status Publikasi</label>
+          <select class="form-select" id="artStatus">
+            <option value="draft">Draft</option>
+            <option value="published">Dipublikasikan</option>
+            <option value="scheduled">Terjadwal</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jadwal Publikasi</label>
+          <input type="datetime-local" class="form-input" id="artSchedule">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags SEO</label>
+        <input type="text" class="form-input" placeholder="tanaman, perawatan, indoor (pisahkan dengan koma)" id="artTags">
+        <div class="form-hint">Membantu artikel mudah ditemukan di mesin pencari</div>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.75rem;">
+        <input type="checkbox" class="cb" id="artFeatured">
+        <label for="artFeatured" style="font-size:.85rem;color:var(--charcoal-lt);cursor:pointer;">Jadikan sebagai Artikel Pilihan (Featured)</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('addModal')">Batal</button>
+      <button class="topbar-btn btn-ghost" onclick="saveArticle('draft')">Simpan Draft</button>
+      <button class="topbar-btn btn-primary" onclick="saveArticle('published')">✓ Publikasikan</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="del-modal">
+    <div style="font-size:3.5rem;margin-bottom:1rem;">🗑️</div>
+    <div style="font-family:var(--font-d);font-size:1.2rem;font-weight:700;color:var(--forest);margin-bottom:.6rem;">Hapus Artikel?</div>
+    <p style="font-size:.875rem;color:var(--charcoal-lt);line-height:1.65;margin-bottom:1.5rem;">Artikel "<span id="deleteArticleName" style="font-weight:500;color:var(--forest);"></span>" akan dihapus permanen dan tidak dapat dikembalikan.</p>
+    <div style="display:flex;gap:.75rem;justify-content:center;">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('deleteModal')">Batal</button>
+      <button class="topbar-btn" style="background:#C0392B;border-color:#C0392B;color:var(--white);" onclick="confirmDelete()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // ── DATA ──
+  const articles = [
+    { id:1, title:'Panduan Lengkap Merawat Monstera Agar Tumbuh Subur', cat:'Perawatan', author:'Rina Sari', status:'Dipublikasikan', featured:true, date:'28 Apr 2026', readers:2400, emoji:'🪴', bg:'#E1F5EE' },
+    { id:2, title:'5 Tanaman yang Cocok untuk Kamar Kos Tanpa Jendela', cat:'Tips & Trik', author:'Dewi Rahayu', status:'Dipublikasikan', featured:false, date:'22 Apr 2026', readers:1820, emoji:'🌵', bg:'#FDF3E0' },
+    { id:3, title:'Tren Dekorasi Ruangan dengan Tanaman di 2026', cat:'Inspirasi', author:'Bagas Pratama', status:'Dipublikasikan', featured:false, date:'15 Apr 2026', readers:3100, emoji:'🌱', bg:'#E1F5EE' },
+    { id:4, title:'Memulai Hobi Merawat Tanaman dari Nol — Panduan Lengkap', cat:'Panduan Pemula', author:'Laila Nur', status:'Dipublikasikan', featured:false, date:'10 Apr 2026', readers:980, emoji:'🌸', bg:'#F5EBF8' },
+    { id:5, title:'Mengapa Sukulen Bisa Mati Meski Jarang Disiram?', cat:'Kaktus & Sukulen', author:'Rina Sari', status:'Draft', featured:false, date:'5 Apr 2026', readers:0, emoji:'🌵', bg:'#E8F4F8' },
+    { id:6, title:'Sulap Balkonmu Jadi Taman Kecil yang Asri dan Estetik', cat:'Outdoor', author:'Tim Tumbuh.', status:'Dipublikasikan', featured:false, date:'1 Apr 2026', readers:1450, emoji:'☀️', bg:'#FAEEDA' },
+    { id:7, title:'Pupuk Organik vs Kimia: Mana yang Lebih Baik?', cat:'Perawatan', author:'Dewi Rahayu', status:'Terjadwal', featured:false, date:'20 Mei 2026', readers:0, emoji:'🌿', bg:'#E1F5EE' },
+    { id:8, title:'Tanaman di Meja Kerja Terbukti Tingkatkan Produktivitas', cat:'Inspirasi', author:'Tim Tumbuh.', status:'Dipublikasikan', featured:true, date:'15 Mar 2026', readers:4200, emoji:'💼', bg:'#FDF3E0' },
+  ];
+
+  let deleteTargetId = null;
+  let selectedIds = new Set();
+
+  // ── STATUS BADGE ──
+  function statusBadge(status){
+    const map = {
+      'Dipublikasikan':'<span class="badge badge-published">✅ Dipublikasikan</span>',
+      'Draft':'<span class="badge badge-draft">⏸ Draft</span>',
+      'Terjadwal':'<span class="badge badge-scheduled">⏰ Terjadwal</span>',
+    };
+    return map[status] || status;
+  }
+
+  // ── RENDER TABLE ──
+  function renderTable(list){
+    const tbody = document.getElementById('tableBody');
+    document.getElementById('tableCount').textContent = `Menampilkan ${list.length} artikel`;
+    document.getElementById('tableFootCount').textContent = `1–${list.length} dari 48 artikel`;
+
+    if(!list.length){
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--gray);">📭 Tidak ada artikel ditemukan</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = list.map(a => `
+      <tr id="row-${a.id}">
+        <td><input type="checkbox" class="cb row-cb" data-id="${a.id}" onchange="toggleRow(${a.id})"></td>
+        <td>
+          <div class="art-thumb-wrap">
+            <div class="art-mini-thumb" style="background:${a.bg};">${a.emoji}</div>
+            <div>
+              <div class="art-mini-title">${a.title}</div>
+              <div class="art-mini-cat">${a.cat} ${a.featured?'· <span style="color:var(--mint);font-size:.65rem;font-weight:600;">⭐ PILIHAN</span>':''}</div>
+            </div>
+          </div>
+        </td>
+        <td><span style="font-size:.78rem;padding:.2rem .6rem;background:var(--offwhite);border-radius:var(--r-full);color:var(--charcoal-lt);">${a.cat}</span></td>
+        <td style="font-size:.82rem;">${a.author}</td>
+        <td>${statusBadge(a.status)}</td>
+        <td style="font-size:.8rem;color:var(--charcoal-lt);">${a.date}</td>
+        <td style="font-size:.82rem;font-weight:500;color:var(--forest);">${a.readers > 0 ? a.readers.toLocaleString('id-ID') : '–'}</td>
+        <td>
+          <div class="tbl-actions">
+            <button class="tbl-btn tbl-view" onclick="window.open('03-article-detail.html','_blank')">👁 Lihat</button>
+            <button class="tbl-btn tbl-edit" onclick="editArticle(${a.id})">✏️ Edit</button>
+            <button class="tbl-btn tbl-delete" onclick="openDeleteModal(${a.id},'${a.title.substring(0,40)}...')">🗑</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // ── FILTER ──
+  function applyFilter(){
+    const q   = document.getElementById('searchInput').value.trim().toLowerCase();
+    const cat = document.getElementById('filterCat').value;
+    const sts = document.getElementById('filterStatus').value;
+    const filtered = articles.filter(a => {
+      const matchQ   = !q || a.title.toLowerCase().includes(q) || a.author.toLowerCase().includes(q);
+      const matchCat = !cat || a.cat === cat;
+      const matchSts = !sts || a.status === sts;
+      return matchQ && matchCat && matchSts;
+    });
+    renderTable(filtered);
+  }
+
+  document.getElementById('searchInput').addEventListener('input', applyFilter);
+  document.getElementById('filterCat').addEventListener('change', applyFilter);
+  document.getElementById('filterStatus').addEventListener('change', applyFilter);
+
+  // ── SELECT ALL ──
+  function toggleSelectAll(){
+    const checked = document.getElementById('selectAll').checked;
+    document.querySelectorAll('.row-cb').forEach(cb => {
+      cb.checked = checked;
+      const id = parseInt(cb.dataset.id);
+      checked ? selectedIds.add(id) : selectedIds.delete(id);
+    });
+    updateBulkUI();
+  }
+
+  function toggleRow(id){
+    const cb = document.querySelector(`.row-cb[data-id="${id}"]`);
+    cb.checked ? selectedIds.add(id) : selectedIds.delete(id);
+    updateBulkUI();
+  }
+
+  function updateBulkUI(){
+    const n = selectedIds.size;
+    document.getElementById('selectedCount').textContent = n > 0 ? `${n} dipilih` : '';
+    document.getElementById('bulkDeleteBtn').style.display = n > 0 ? 'flex' : 'none';
+  }
+
+  function bulkDelete(){
+    showToast(`${selectedIds.size} artikel berhasil dihapus 🗑️`, 'error');
+    selectedIds.clear();
+    updateBulkUI();
+    document.getElementById('selectAll').checked = false;
+  }
+
+  // ── MODAL ──
+  function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+  document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+    overlay.addEventListener('click',e=>{ if(e.target===overlay) closeModal(overlay.id); });
+  });
+
+  // ── ADD/EDIT ──
+  function editArticle(id){
+    const a = articles.find(x=>x.id===id);
+    if(!a) return;
+    document.getElementById('modalTitle').textContent = 'Edit Artikel';
+    document.getElementById('artTitle').value    = a.title;
+    document.getElementById('artCat').value      = a.cat;
+    document.getElementById('artAuthor').value   = a.author;
+    document.getElementById('artStatus').value   = a.status === 'Dipublikasikan' ? 'published' : a.status === 'Draft' ? 'draft' : 'scheduled';
+    document.getElementById('artFeatured').checked = a.featured;
+    openModal('addModal');
+  }
+
+  function saveArticle(mode){
+    const title = document.getElementById('artTitle').value.trim();
+    if(!title){ showToast('Judul artikel wajib diisi!','error'); return; }
+    closeModal('addModal');
+    showToast(mode === 'published' ? `Artikel dipublikasikan! ✅` : `Artikel disimpan sebagai draft 📝`);
+    document.getElementById('artTitle').value = '';
+  }
+
+  // ── DELETE ──
+  function openDeleteModal(id, name){
+    deleteTargetId = id;
+    document.getElementById('deleteArticleName').textContent = name;
+    openModal('deleteModal');
+  }
+  function confirmDelete(){
+    const row = document.getElementById(`row-${deleteTargetId}`);
+    if(row){ row.style.opacity='0'; row.style.transition='.3s'; setTimeout(()=>row.remove(),320); }
+    closeModal('deleteModal');
+    showToast('Artikel berhasil dihapus 🗑️', 'error');
+    deleteTargetId = null;
+  }
+
+  // ── PAGINATION ──
+  document.querySelectorAll('.pg-btn:not(.disabled)').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(['←','→'].includes(btn.textContent.trim()))return;
+      document.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // ── CURSOR ──
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function anim(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.querySelectorAll('a,button,input,select').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
+  });
+
+  // ── SCROLL REVEAL ──
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // ── MOBILE SIDEBAR ──
+  function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('mobile-open'); }
+  if(window.innerWidth<=1024) document.getElementById('sidebarToggle').style.display='flex';
+
+  // ── TOAST ──
+  function showToast(msg,type='success'){
+    const tw=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className=`toast${type==='error'?' error':type==='warn'?' warn':''}`;
+    const icon=type==='error'?'❌':type==='warn'?'⚠️':'✅';
+    t.innerHTML=`<span>${icon}</span><span>${msg}</span>`;
+    tw.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3500);
+  }
+
+  // ── INIT ──
+  renderTable(articles);
+</script>
+</body>
+</html>

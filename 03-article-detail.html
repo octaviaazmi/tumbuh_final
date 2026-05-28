@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Merawat Monstera — Tumbuh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest:#1C3A2F;--forest-light:#2A5242;--mint:#5DCAA5;--mint-light:#9FE1CB;--mint-pale:#D4F4EA;
+      --sage:#E1F5EE;--amber:#FAC775;--amber-dark:#EF9F27;--offwhite:#F5F2EC;--white:#FFFFFF;
+      --charcoal:#2C2C2A;--charcoal-lt:#444441;--gray:#B4B2A9;--gray-lt:#D8D6CE;
+      --border:rgba(28,58,47,0.08);--border-md:rgba(28,58,47,0.14);
+      --shadow-sm:0 2px 8px rgba(28,58,47,.07);--shadow-md:0 8px 24px rgba(28,58,47,.10);--shadow-lg:0 20px 48px rgba(28,58,47,.14);
+      --font-d:'Playfair Display',serif;--font-b:'DM Sans',sans-serif;--nav-h:72px;
+      --r-sm:8px;--r-md:12px;--r-lg:20px;--r-xl:28px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font-b);background:var(--offwhite);color:var(--charcoal);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}
+    button{cursor:pointer;font-family:var(--font-b);border:none;background:none;}
+
+    /* CURSOR */
+    .cursor{width:12px;height:12px;background:var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;}
+
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 4rem;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;transition:all .35s;}
+    .navbar.scrolled{background:rgba(245,242,236,.94);backdrop-filter:blur(18px);box-shadow:0 1px 0 var(--border);}
+    .nav-logo{font-family:var(--font-d);font-size:1.6rem;font-weight:700;color:var(--forest);letter-spacing:-.02em;}
+    .nav-logo .dot{color:var(--mint);}
+    .nav-links{display:flex;align-items:center;gap:2.25rem;}
+    .nav-links a{font-size:.875rem;color:var(--charcoal-lt);position:relative;transition:color .2s;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--mint);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--forest);}
+    .nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);}
+    .nav-actions{display:flex;align-items:center;gap:1rem;}
+    .nav-cart{position:relative;width:38px;height:38px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;}
+    .nav-cart:hover{background:var(--mint-pale);transform:scale(1.05);}
+    .nav-btn{padding:.55rem 1.3rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.85rem;font-weight:500;transition:all .2s;}
+    .nav-btn:hover{background:var(--forest-light);transform:translateY(-1px);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .3s;}
+
+    /* MOBILE NAV */
+    .mobile-nav{display:none;position:fixed;inset:0;background:var(--forest);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:1.75rem;}
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:var(--font-d);font-size:2.2rem;font-weight:700;color:rgba(255,255,255,.85);transition:color .2s;opacity:0;transform:translateY(20px);animation:fadeUp .45s ease forwards;}
+    .mobile-nav a:nth-child(2){animation-delay:.05s}.mobile-nav a:nth-child(3){animation-delay:.12s}.mobile-nav a:nth-child(4){animation-delay:.19s}.mobile-nav a:nth-child(5){animation-delay:.26s}.mobile-nav a:nth-child(6){animation-delay:.33s}
+    .mobile-nav a:hover{color:var(--mint);}
+    .mobile-close{position:absolute;top:1.25rem;right:1.5rem;color:var(--white);font-size:1.8rem;opacity:.7;transition:opacity .2s;}
+    .mobile-close:hover{opacity:1;}
+
+    /* ARTICLE HERO */
+    .art-hero{background:var(--forest);padding:calc(var(--nav-h)+3.5rem) 4rem 0;position:relative;overflow:hidden;}
+    .art-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 65% 50%,var(--forest-light),var(--forest) 70%);}
+    .hero-content{max-width:780px;margin:0 auto;position:relative;z-index:1;padding-bottom:3rem;}
+    .breadcrumb{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:1.25rem;}
+    .breadcrumb a{color:rgba(255,255,255,.55);transition:color .2s;}
+    .breadcrumb a:hover{color:var(--mint-light);}
+    .breadcrumb span{color:rgba(255,255,255,.25);}
+    .art-cat-tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(93,202,165,.18);color:var(--mint-light);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .9rem;border-radius:var(--r-full);margin-bottom:1.25rem;}
+    .art-hero h1{font-family:var(--font-d);font-size:clamp(1.8rem,3.5vw,2.75rem);font-weight:900;color:var(--white);line-height:1.12;letter-spacing:-.025em;margin-bottom:1.5rem;}
+    .art-hero-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem;}
+    .meta-author{display:flex;align-items:center;gap:.65rem;}
+    .meta-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;border:1.5px solid rgba(255,255,255,.15);}
+    .meta-name{font-size:.875rem;font-weight:500;color:var(--white);}
+    .meta-role{font-size:.72rem;color:rgba(255,255,255,.45);}
+    .meta-sep{width:3px;height:3px;background:rgba(255,255,255,.2);border-radius:50%;}
+    .meta-info{font-size:.78rem;color:rgba(255,255,255,.5);}
+
+    /* HERO THUMBNAIL */
+    .art-hero-thumb{max-width:780px;margin:0 auto;position:relative;z-index:1;}
+    .thumb-inner{height:380px;background:linear-gradient(135deg,#2A5242,#3D6B58);border-radius:var(--r-xl) var(--r-xl) 0 0;display:flex;align-items:center;justify-content:center;font-size:13rem;overflow:hidden;position:relative;}
+    .thumb-inner::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(28,58,47,.45));}
+    .thumb-emoji{animation:float 6s ease-in-out infinite;display:block;position:relative;z-index:1;}
+    .thumb-stats{position:absolute;bottom:1.5rem;right:1.5rem;z-index:2;display:flex;gap:.6rem;}
+    .thumb-stat{background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-full);padding:.35rem .85rem;font-size:.72rem;color:var(--white);display:flex;align-items:center;gap:.35rem;}
+
+    /* READING PROGRESS BAR */
+    .progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--mint),var(--amber));z-index:9999;transition:width .15s;width:0%;}
+
+    /* CONTENT LAYOUT */
+    .content-layout{max-width:1180px;margin:0 auto;padding:4rem;display:grid;grid-template-columns:1fr 320px;gap:4rem;align-items:start;}
+
+    /* ARTICLE BODY */
+    .art-body{min-width:0;}
+
+    /* Share bar */
+    .share-bar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:2.5rem;}
+    .share-label{font-size:.78rem;color:var(--gray);font-weight:500;}
+    .share-btns{display:flex;gap:.5rem;}
+    .share-btn{padding:.4rem .9rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);font-size:.75rem;font-weight:500;color:var(--charcoal-lt);cursor:pointer;transition:all .18s;background:var(--white);}
+    .share-btn:hover{border-color:var(--forest);color:var(--forest);}
+
+    /* Article content typography */
+    .article-content{font-size:1rem;line-height:1.85;color:var(--charcoal-lt);}
+    .article-content .lead{font-size:1.1rem;line-height:1.82;color:var(--charcoal);font-weight:400;padding:1.25rem 1.5rem;background:var(--sage);border-left:3px solid var(--mint);border-radius:0 var(--r-md) var(--r-md) 0;margin-bottom:2rem;}
+    .article-content h2{font-family:var(--font-d);font-size:1.5rem;font-weight:700;color:var(--forest);margin:2.5rem 0 .85rem;letter-spacing:-.02em;}
+    .article-content h3{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:var(--forest);margin:1.75rem 0 .6rem;}
+    .article-content p{margin-bottom:1.1rem;}
+    .article-content strong{color:var(--charcoal);font-weight:600;}
+    .article-content em{font-style:italic;color:var(--forest);}
+
+    /* Callout */
+    .callout{display:flex;gap:.9rem;align-items:flex-start;padding:1.1rem 1.35rem;border-radius:0 var(--r-md) var(--r-md) 0;margin:2rem 0;}
+    .callout-info{background:var(--sage);border-left:3px solid var(--mint);}
+    .callout-warn{background:#FDF3E0;border-left:3px solid var(--amber-dark);}
+    .callout-icon{font-size:1.2rem;flex-shrink:0;margin-top:.05rem;}
+    .callout p{margin:0;font-size:.9rem;line-height:1.65;}
+    .callout strong{color:var(--forest);}
+    .callout-warn strong{color:#7A4F00;}
+
+    /* Tip list */
+    .tip-list{display:flex;flex-direction:column;gap:.75rem;margin:1.75rem 0;}
+    .tip-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.25rem;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);}
+    .tip-num{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:var(--mint);flex-shrink:0;min-width:28px;line-height:1.4;}
+    .tip-text{font-size:.875rem;color:var(--charcoal-lt);line-height:1.6;}
+    .tip-text strong{color:var(--charcoal);}
+
+    /* Care table */
+    .care-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.75rem 0;}
+    .care-cell{background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);padding:1.1rem;display:flex;flex-direction:column;gap:.35rem;}
+    .care-icon{font-size:1.4rem;}
+    .care-label{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mint);}
+    .care-value{font-size:.875rem;font-weight:500;color:var(--forest);}
+    .care-note{font-size:.75rem;color:var(--gray);line-height:1.4;}
+
+    /* Tags */
+    .art-tags{display:flex;flex-wrap:wrap;gap:.5rem;padding-top:2rem;margin-top:2rem;border-top:1px solid var(--border);}
+    .tag-label{font-size:.78rem;color:var(--gray);margin-right:.25rem;align-self:center;}
+    .tag{padding:.28rem .75rem;background:var(--offwhite);border:1px solid var(--border-md);border-radius:var(--r-full);font-size:.72rem;font-weight:500;color:var(--charcoal-lt);transition:all .18s;cursor:pointer;}
+    .tag:hover{border-color:var(--forest);color:var(--forest);}
+
+    /* Author card */
+    .author-card{background:var(--sage);border-radius:var(--r-lg);padding:1.5rem;display:flex;gap:1.25rem;align-items:flex-start;margin-top:2.5rem;}
+    .author-avatar{width:56px;height:56px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;border:2px solid var(--mint-pale);}
+    .author-tag{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mint);margin-bottom:.35rem;}
+    .author-name{font-family:var(--font-d);font-size:1.05rem;font-weight:700;color:var(--forest);margin-bottom:.4rem;}
+    .author-bio{font-size:.85rem;line-height:1.65;color:var(--charcoal-lt);margin:0;}
+
+    /* SIDEBAR */
+    .sidebar{position:sticky;top:calc(var(--nav-h)+2rem);display:flex;flex-direction:column;gap:1.25rem;}
+    .sidebar-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;overflow:hidden;}
+    .sidebar-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:1rem;}
+
+    /* Reading progress widget */
+    .read-progress-track{height:6px;background:var(--gray-lt);border-radius:var(--r-full);overflow:hidden;margin-bottom:.5rem;}
+    .read-progress-fill{height:100%;background:linear-gradient(90deg,var(--mint),var(--amber));border-radius:var(--r-full);transition:width .2s;width:0%;}
+    .read-pct{font-size:.75rem;color:var(--mint);font-weight:500;}
+
+    /* TOC */
+    .toc-list{display:flex;flex-direction:column;gap:.5rem;}
+    .toc-item{display:flex;gap:.6rem;align-items:flex-start;font-size:.8rem;color:var(--charcoal-lt);cursor:pointer;padding:.3rem .4rem;border-radius:var(--r-sm);transition:all .18s;}
+    .toc-item:hover{background:var(--offwhite);color:var(--forest);}
+    .toc-item.active-toc{color:var(--forest);font-weight:500;background:var(--sage);}
+    .toc-dot{width:6px;height:6px;border-radius:50%;background:var(--mint-pale);flex-shrink:0;margin-top:.35rem;transition:background .2s;}
+    .toc-item.active-toc .toc-dot{background:var(--mint);}
+
+    /* Related products in sidebar */
+    .rel-prod{display:flex;align-items:center;gap:.75rem;padding:.7rem;background:var(--offwhite);border-radius:var(--r-md);cursor:pointer;transition:background .18s;}
+    .rel-prod:hover{background:var(--sage);}
+    .rel-prod+.rel-prod{margin-top:.5rem;}
+    .rel-thumb{width:44px;height:44px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+    .rel-name{font-size:.82rem;font-weight:500;color:var(--forest);}
+    .rel-price{font-size:.75rem;color:var(--mint);margin-top:1px;}
+
+    /* Related articles */
+    .rel-art{display:flex;gap:.75rem;cursor:pointer;transition:opacity .2s;padding:.4rem 0;}
+    .rel-art:hover{opacity:.75;}
+    .rel-art+.rel-art{border-top:1px solid var(--border);padding-top:.75rem;margin-top:.35rem;}
+    .rel-art-thumb{width:52px;height:52px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+    .rel-art-title{font-size:.8rem;color:var(--charcoal-lt);line-height:1.4;}
+
+    /* RELATED ARTICLES SECTION */
+    .related-section{max-width:1180px;margin:0 auto;padding:0 4rem 5rem;}
+    .related-section h2{font-family:var(--font-d);font-size:1.6rem;font-weight:700;color:var(--forest);margin-bottom:2rem;}
+    .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+    .art-card-sm{background:var(--white);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);display:block;color:inherit;transition:all .3s;}
+    .art-card-sm:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);}
+    .art-card-sm:hover .ac-emoji{transform:scale(1.1);}
+    .ac-thumb{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;}
+    .ac-emoji{transition:transform .4s;display:block;}
+    .ac-body{padding:1.1rem 1.25rem 1.35rem;}
+    .ac-cat{font-size:.68rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--mint);margin-bottom:.4rem;}
+    .ac-title{font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--forest);line-height:1.3;margin-bottom:.75rem;}
+    .ac-meta{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--gray);}
+
+    /* FOOTER */
+    footer{background:var(--charcoal);color:var(--white);padding:5rem 4rem 2rem;}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:4rem;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:2rem;max-width:1280px;margin-left:auto;margin-right:auto;}
+    .f-logo{font-family:var(--font-d);font-size:1.9rem;font-weight:700;color:var(--white);margin-bottom:.85rem;}
+    .f-logo .dot{color:var(--mint);}
+    .f-desc{font-size:.875rem;color:rgba(255,255,255,.38);line-height:1.75;margin-bottom:1.5rem;}
+    .f-socials{display:flex;gap:.6rem;}
+    .f-social{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:rgba(255,255,255,.55);transition:all .2s;}
+    .f-social:hover{border-color:var(--mint);background:rgba(93,202,165,.1);color:var(--mint);}
+    .f-col-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1.1rem;}
+    .f-links{display:flex;flex-direction:column;gap:.7rem;}
+    .f-links a{font-size:.875rem;color:rgba(255,255,255,.55);transition:color .2s;}
+    .f-links a:hover{color:var(--mint);}
+    .f-bottom{display:flex;justify-content:space-between;align-items:center;max-width:1280px;margin:0 auto;}
+    .f-copy{font-size:.78rem;color:rgba(255,255,255,.22);}
+
+    /* SCROLL TOP */
+    .scroll-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--forest);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;z-index:500;opacity:0;pointer-events:none;transition:all .3s;box-shadow:var(--shadow-md);}
+    .scroll-top.visible{opacity:1;pointer-events:auto;}
+    .scroll-top:hover{background:var(--forest-light);transform:translateY(-2px);}
+
+    /* TOAST */
+    .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem;}
+    .toast{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.1rem;background:var(--charcoal);color:var(--white);border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease;border-left:3px solid var(--mint);min-width:240px;}
+
+    /* ANIMATIONS */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+
+    /* REVEAL */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}.reveal-d3{transition-delay:.24s}
+
+    /* RESPONSIVE */
+    @media(max-width:1100px){
+      .content-layout{grid-template-columns:1fr;padding:3rem 2rem;}
+      .sidebar{position:static;}
+      .art-hero{padding:calc(var(--nav-h)+3rem) 2rem 0;}
+      .hero-content,.art-hero-thumb{max-width:100%;}
+      .related-section{padding:0 2rem 4rem;}
+      .related-grid{grid-template-columns:1fr 1fr;}
+      .care-grid{grid-template-columns:1fr 1fr;}
+      footer{padding:4rem 2rem 1.5rem;}
+      .footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem;}
+    }
+    @media(max-width:768px){
+      .navbar{padding:0 1.25rem;}
+      .nav-links,.nav-btn{display:none;}
+      .hamburger{display:flex;}
+      .art-hero{padding:calc(var(--nav-h)+2rem) 1.25rem 0;}
+      .thumb-inner{height:240px;font-size:8rem;}
+      .share-bar{flex-direction:column;gap:.75rem;align-items:flex-start;}
+      .related-grid{grid-template-columns:1fr;}
+      .care-grid{grid-template-columns:1fr 1fr;}
+      footer{padding:3rem 1.25rem 1.25rem;}
+      .footer-grid{grid-template-columns:1fr;gap:2rem;}
+      .f-bottom{flex-direction:column;gap:.5rem;text-align:center;}
+      .content-layout{padding:2.5rem 1.25rem;}
+      .related-section{padding:0 1.25rem 3.5rem;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="index.html">Beranda</a>
+  <a href="04-catalog.html">Katalog</a>
+  <a href="02-articles.html">Artikel</a>
+  <a href="06-cart.html">Keranjang</a>
+  <a href="#">Akun</a>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">Tumbuh<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="04-catalog.html">Katalog</a></li>
+    <li><a href="02-articles.html" class="active">Artikel</a></li>
+    <li><a href="#">Tentang</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="06-cart.html" class="nav-cart">🛒</a>
+    <a href="#" class="nav-btn">Masuk</a>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- ARTICLE HERO -->
+<header class="art-hero">
+  <div class="hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Beranda</a><span>›</span>
+      <a href="02-articles.html">Artikel</a><span>›</span>
+      <span style="color:rgba(255,255,255,.65);">Perawatan</span>
+    </div>
+    <span class="art-cat-tag">🌱 Perawatan</span>
+    <h1>Panduan Lengkap Merawat Monstera Agar Tumbuh Subur dan Cepat Besar di Dalam Ruangan</h1>
+    <div class="art-hero-meta">
+      <div class="meta-author">
+        <div class="meta-avatar">🧑</div>
+        <div>
+          <div class="meta-name">Rina Sari</div>
+          <div class="meta-role">Hortikulturist · Tumbuh.</div>
+        </div>
+      </div>
+      <span class="meta-sep"></span>
+      <span class="meta-info">28 April 2026</span>
+      <span class="meta-sep"></span>
+      <span class="meta-info">8 menit baca</span>
+      <span class="meta-sep"></span>
+      <span class="meta-info">2.4k pembaca</span>
+    </div>
+  </div>
+  <div class="art-hero-thumb">
+    <div class="thumb-inner">
+      <span class="thumb-emoji">🪴</span>
+      <div class="thumb-stats">
+        <span class="thumb-stat">👁 2.4k</span>
+        <span class="thumb-stat">❤️ 348</span>
+        <span class="thumb-stat">💬 56</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div class="content-layout">
+
+  <!-- ARTICLE BODY -->
+  <article class="art-body" id="articleBody">
+
+    <!-- Share bar -->
+    <div class="share-bar">
+      <span class="share-label">Bagikan artikel ini:</span>
+      <div class="share-btns">
+        <button class="share-btn" onclick="copyLink()">🔗 Salin Link</button>
+        <button class="share-btn" onclick="showToast('Dibagikan ke Facebook!')">📘 Facebook</button>
+        <button class="share-btn" onclick="showToast('Dibagikan ke Twitter!')">🐦 Twitter</button>
+        <button class="share-btn" onclick="showToast('Disimpan ke koleksi!')">🔖 Simpan</button>
+      </div>
+    </div>
+
+    <!-- Article content -->
+    <div class="article-content" id="articleContent">
+
+      <p class="lead">Monstera deliciosa — tanaman dengan daun berlubang ikonik yang telah menghiasi ribuan feed Instagram dan sudut ruang tamu di seluruh dunia. Tapi tahukah kamu, banyak pemilik Monstera yang justru tidak tahu cara merawatnya dengan benar?</p>
+
+      <h2 id="h-kenapa">Mengapa Monstera Begitu Populer?</h2>
+      <p>Monstera adalah tanaman tropis asal Amerika Tengah yang terkenal karena kemampuannya beradaptasi dengan lingkungan indoor. Daun berlubangnya yang khas — dikenal sebagai <em>fenestration</em> — bukan sekadar estetik, melainkan merupakan adaptasi alami agar daun besar tidak robek saat tertiup angin di hutan tropis.</p>
+      <p>Selain cantik, Monstera juga relatif mudah dirawat dibanding banyak tanaman hias lain. Namun "mudah" bukan berarti bisa diabaikan begitu saja.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <p><strong>Tahukah kamu?</strong> Lubang pada daun Monstera baru akan muncul ketika tanaman sudah cukup dewasa dan mendapat cukup cahaya. Monstera muda umumnya memiliki daun yang masih utuh tanpa lubang sama sekali.</p>
+      </div>
+
+      <h2 id="h-cahaya">1. Kebutuhan Cahaya</h2>
+      <p>Monstera menyukai <strong>cahaya tidak langsung yang terang</strong> (bright indirect light). Letakkan di dekat jendela yang mendapat sinar matahari pagi, tapi hindari paparan langsung karena bisa membakar daun.</p>
+      <p>Di ruangan gelap, Monstera masih bisa bertahan, tapi pertumbuhannya akan sangat lambat dan daun baru tidak akan memiliki lubang. Jika cahaya alami terbatas, kamu bisa menambahkan grow light dengan spektrum penuh.</p>
+
+      <h2 id="h-siram">2. Penyiraman yang Tepat</h2>
+      <p>Ini adalah area di mana kebanyakan orang membuat kesalahan terbesar. Monstera <strong>tidak suka media tanam yang selalu basah</strong>. Sirami saat lapisan atas tanah (sekitar 5 cm) sudah kering saat disentuh.</p>
+
+      <div class="tip-list">
+        <div class="tip-item">
+          <span class="tip-num">01</span>
+          <div class="tip-text"><strong>Cek tanah dulu</strong> sebelum menyiram — jangan jadwalkan secara kaku, kondisi cuaca mempengaruhi kecepatan tanah mengering</div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">02</span>
+          <div class="tip-text"><strong>Siram sampai menetes</strong> dari lubang drainase di bawah pot, lalu buang kelebihan air yang tertampung</div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">03</span>
+          <div class="tip-text"><strong>Gunakan air suhu ruangan</strong> — air dingin dari kulkas atau AC bisa mengejutkan dan merusak sistem akar</div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">04</span>
+          <div class="tip-text"><strong>Endapkan air keran</strong> semalam sebelum digunakan jika mengandung klorin tinggi untuk mencegah penumpukan mineral di tanah</div>
+        </div>
+      </div>
+
+      <h2 id="h-media">3. Media Tanam dan Pot</h2>
+      <p>Gunakan campuran tanah yang memiliki drainase baik. Formula favorit kami: <strong>60% tanah pot + 20% perlite + 20% cocopit</strong>. Kombinasi ini memastikan akar mendapat cukup udara dan air tidak menggenang.</p>
+      <p>Ganti pot saat akar sudah mulai keluar dari lubang drainase. Gunakan pot yang <strong>2–3 cm lebih besar</strong> dari pot sebelumnya — terlalu besar justru membuat tanah terlalu lama menyimpan air dan berisiko busuk akar.</p>
+
+      <h2 id="h-pupuk">4. Pupuk dan Nutrisi</h2>
+      <p>Pupuk Monstera setiap <strong>4–6 minggu sekali</strong> selama musim pertumbuhan aktif. Gunakan pupuk NPK seimbang (misalnya 10-10-10) yang diencerkan setengah dosis dari anjuran kemasan. Kurangi atau hentikan pemupukan saat tanaman tidak aktif tumbuh.</p>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <p><strong>Perhatian:</strong> Semua bagian Monstera bersifat toksik jika dikonsumsi karena mengandung kalsium oksalat. Jauhkan dari jangkauan anak kecil dan hewan peliharaan seperti kucing dan anjing.</p>
+      </div>
+
+      <h2 id="h-suhu">5. Kelembapan dan Suhu</h2>
+      <p>Sebagai tanaman tropis, Monstera suka kelembapan tinggi (60–80%). Jika udara di rumah kamu kering akibat AC, kamu bisa menyemprot daun dengan air bersih, meletakkan tray berisi kerikil dan air di bawah pot, atau menggunakan humidifier ruangan.</p>
+      <p>Suhu ideal adalah <strong>18–27°C</strong>. Hindari meletakkan Monstera di dekat ventilasi AC atau di luar ruangan saat suhu di bawah 15°C.</p>
+
+      <h2 id="h-ringkasan">Ringkasan Perawatan</h2>
+      <div class="care-grid">
+        <div class="care-cell"><span class="care-icon">☀️</span><span class="care-label">Cahaya</span><span class="care-value">Terang Tidak Langsung</span><span class="care-note">Dekat jendela, hindari sinar langsung</span></div>
+        <div class="care-cell"><span class="care-icon">💧</span><span class="care-label">Siram</span><span class="care-value">7–10 Hari Sekali</span><span class="care-note">Cek tanah dulu sebelum menyiram</span></div>
+        <div class="care-cell"><span class="care-icon">🌡️</span><span class="care-label">Suhu</span><span class="care-value">18–27°C</span><span class="care-note">Hindari suhu ekstrem & angin AC</span></div>
+        <div class="care-cell"><span class="care-icon">💨</span><span class="care-label">Kelembapan</span><span class="care-value">60–80%</span><span class="care-note">Semprot daun atau pakai humidifier</span></div>
+        <div class="care-cell"><span class="care-icon">🌱</span><span class="care-label">Pupuk</span><span class="care-value">Setiap 4–6 Minggu</span><span class="care-note">NPK seimbang, dosis setengah</span></div>
+        <div class="care-cell"><span class="care-icon">🪴</span><span class="care-label">Repotting</span><span class="care-value">Setiap 1–2 Tahun</span><span class="care-note">Saat akar keluar dari lubang bawah</span></div>
+      </div>
+
+    </div>
+
+    <!-- Tags -->
+    <div class="art-tags">
+      <span class="tag-label">Tags:</span>
+      <span class="tag">Monstera</span>
+      <span class="tag">Perawatan</span>
+      <span class="tag">Indoor</span>
+      <span class="tag">Tanaman Hias</span>
+      <span class="tag">Tips</span>
+      <span class="tag">Pemula</span>
+    </div>
+
+    <!-- Author card -->
+    <div class="author-card">
+      <div class="author-avatar">🧑</div>
+      <div>
+        <div class="author-tag">Tentang Penulis</div>
+        <div class="author-name">Rina Sari</div>
+        <p class="author-bio">Hortikulturist dengan 8 tahun pengalaman merawat dan mengkurasi tanaman hias. Bergabung dengan tim Tumbuh. sejak 2022 untuk berbagi pengetahuan tentang dunia tanaman kepada semua orang.</p>
+      </div>
+    </div>
+
+  </article>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Reading progress -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">Progress Membaca</div>
+      <div class="read-progress-track">
+        <div class="read-progress-fill" id="progressFill"></div>
+      </div>
+      <div class="read-pct" id="progressPct">0% selesai</div>
+    </div>
+
+    <!-- Table of contents -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">Daftar Isi</div>
+      <div class="toc-list" id="tocList">
+        <div class="toc-item" data-target="h-kenapa"><span class="toc-dot"></span>Mengapa Monstera Populer?</div>
+        <div class="toc-item" data-target="h-cahaya"><span class="toc-dot"></span>Kebutuhan Cahaya</div>
+        <div class="toc-item" data-target="h-siram"><span class="toc-dot"></span>Penyiraman yang Tepat</div>
+        <div class="toc-item" data-target="h-media"><span class="toc-dot"></span>Media Tanam & Pot</div>
+        <div class="toc-item" data-target="h-pupuk"><span class="toc-dot"></span>Pupuk & Nutrisi</div>
+        <div class="toc-item" data-target="h-suhu"><span class="toc-dot"></span>Kelembapan & Suhu</div>
+        <div class="toc-item" data-target="h-ringkasan"><span class="toc-dot"></span>Ringkasan Perawatan</div>
+      </div>
+    </div>
+
+    <!-- Related products -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">Produk Terkait</div>
+      <a href="05-product-detail.html" class="rel-prod">
+        <div class="rel-thumb" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);">🪴</div>
+        <div><div class="rel-name">Monstera Deliciosa</div><div class="rel-price">Rp 185.000</div></div>
+      </a>
+      <a href="05-product-detail.html" class="rel-prod">
+        <div class="rel-thumb" style="background:linear-gradient(135deg,#E1F5EE,#5DCAA5);">🌿</div>
+        <div><div class="rel-name">Pothos Golden</div><div class="rel-price">Rp 72.000</div></div>
+      </a>
+      <a href="05-product-detail.html" class="rel-prod">
+        <div class="rel-thumb" style="background:linear-gradient(135deg,#E8F4F8,#9FD6E8);">🪴</div>
+        <div><div class="rel-name">Calathea Orbifolia</div><div class="rel-price">Rp 175.000</div></div>
+      </a>
+    </div>
+
+    <!-- Related articles -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">Artikel Terkait</div>
+      <a href="03-article-detail.html" class="rel-art">
+        <div class="rel-art-thumb" style="background:linear-gradient(135deg,#FDF3E0,#FAC775);">🌵</div>
+        <div class="rel-art-title">5 Tanaman untuk Kamar Kos Tanpa Jendela</div>
+      </a>
+      <a href="03-article-detail.html" class="rel-art">
+        <div class="rel-art-thumb" style="background:linear-gradient(135deg,#E1F5EE,#1D9E75);">🌱</div>
+        <div class="rel-art-title">Tren Dekorasi Ruangan dengan Tanaman 2026</div>
+      </a>
+      <a href="03-article-detail.html" class="rel-art">
+        <div class="rel-art-thumb" style="background:linear-gradient(135deg,#F5EBF8,#D4A8E0);">🌸</div>
+        <div class="rel-art-title">Panduan Memulai Hobi Tanaman dari Nol</div>
+      </a>
+    </div>
+
+  </aside>
+</div>
+
+<!-- RELATED ARTICLES -->
+<section class="related-section">
+  <h2>Artikel <em style="font-style:italic;color:var(--mint);">Lainnya</em></h2>
+  <div class="related-grid">
+    <a href="03-article-detail.html" class="art-card-sm reveal">
+      <div class="ac-thumb" style="background:linear-gradient(135deg,#FDF3E0,#EF9F27);">
+        <span class="ac-emoji">🌵</span>
+      </div>
+      <div class="ac-body">
+        <div class="ac-cat">Tips & Trik</div>
+        <div class="ac-title">5 Tanaman yang Cocok untuk Kamar Kos Tanpa Jendela</div>
+        <div class="ac-meta">👩 Dewi R. · 22 Apr 2026</div>
+      </div>
+    </a>
+    <a href="03-article-detail.html" class="art-card-sm reveal reveal-d1">
+      <div class="ac-thumb" style="background:linear-gradient(135deg,#E1F5EE,#1D9E75);">
+        <span class="ac-emoji">🌱</span>
+      </div>
+      <div class="ac-body">
+        <div class="ac-cat">Inspirasi</div>
+        <div class="ac-title">Tren Dekorasi Ruangan dengan Tanaman di 2026</div>
+        <div class="ac-meta">👨 Bagas P. · 15 Apr 2026</div>
+      </div>
+    </a>
+    <a href="03-article-detail.html" class="art-card-sm reveal reveal-d2">
+      <div class="ac-thumb" style="background:linear-gradient(135deg,#F5EBF8,#D4A8E0);">
+        <span class="ac-emoji">🌸</span>
+      </div>
+      <div class="ac-body">
+        <div class="ac-cat">Panduan Pemula</div>
+        <div class="ac-title">Memulai Hobi Merawat Tanaman dari Nol — Panduan Lengkap</div>
+        <div class="ac-meta">👩‍🌾 Laila N. · 10 Apr 2026</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo">Tumbuh<span class="dot">.</span></div>
+      <p class="f-desc">Menghadirkan keindahan alam ke dalam ruang hidupmu. Tanaman hias pilihan, dikirim dengan cinta ke seluruh Indonesia.</p>
+      <div class="f-socials">
+        <a class="f-social" href="#">📷</a>
+        <a class="f-social" href="#">🐦</a>
+        <a class="f-social" href="#">💼</a>
+        <a class="f-social" href="#">▶️</a>
+      </div>
+    </div>
+    <div>
+      <div class="f-col-title">Produk</div>
+      <ul class="f-links">
+        <li><a href="04-catalog.html">Tanaman Indoor</a></li>
+        <li><a href="04-catalog.html">Tanaman Outdoor</a></li>
+        <li><a href="04-catalog.html">Kaktus & Sukulen</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="f-col-title">Artikel</div>
+      <ul class="f-links">
+        <li><a href="02-articles.html">Semua Artikel</a></li>
+        <li><a href="02-articles.html">Perawatan</a></li>
+        <li><a href="02-articles.html">Inspirasi</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="f-col-title">Bantuan</div>
+      <ul class="f-links">
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Pengiriman</a></li>
+        <li><a href="#">Hubungi Kami</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <div class="f-copy">© 2026 Tumbuh. Semua hak dilindungi.</div>
+    <div class="f-copy">Dibuat dengan 🌿 di Indonesia</div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop">↑</button>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // CURSOR
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function anim(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
+  });
+
+  // NAVBAR
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',onScroll,{passive:true});
+  function onScroll(){
+    navbar.classList.toggle('scrolled',scrollY>60);
+    document.getElementById('scrollTop').classList.toggle('visible',scrollY>400);
+    updateReadingProgress();
+    updateActiveToc();
+  }
+
+  // MOBILE NAV
+  const mobileNav=document.getElementById('mobileNav');
+  document.getElementById('hamburger').addEventListener('click',()=>{mobileNav.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('mobileClose').addEventListener('click',()=>{mobileNav.classList.remove('open');document.body.style.overflow='';});
+
+  // SCROLL TOP
+  document.getElementById('scrollTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  // SCROLL REVEAL
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // READING PROGRESS
+  function updateReadingProgress(){
+    const art=document.getElementById('articleContent');
+    if(!art)return;
+    const rect=art.getBoundingClientRect();
+    const total=art.offsetHeight;
+    const scrolled=Math.max(0,-rect.top);
+    const pct=Math.min(100,Math.round((scrolled/total)*100));
+    document.getElementById('progressBar').style.width=pct+'%';
+    document.getElementById('progressFill').style.width=pct+'%';
+    document.getElementById('progressPct').textContent=pct+'% selesai';
+  }
+
+  // TOC scroll spy
+  function updateActiveToc(){
+    const headings=['h-kenapa','h-cahaya','h-siram','h-media','h-pupuk','h-suhu','h-ringkasan'];
+    let active='';
+    headings.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el&&el.getBoundingClientRect().top<140)active=id;
+    });
+    document.querySelectorAll('.toc-item').forEach(item=>{
+      item.classList.toggle('active-toc',item.dataset.target===active);
+    });
+  }
+
+  // TOC click
+  document.querySelectorAll('.toc-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const target=document.getElementById(item.dataset.target);
+      if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+
+  // TOAST
+  function showToast(msg){
+    const tw=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className='toast';
+    t.innerHTML=`<span>✅</span><span>${msg}</span>`;
+    tw.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3000);
+  }
+
+  function copyLink(){
+    navigator.clipboard?.writeText(window.location.href).catch(()=>{});
+    showToast('Link berhasil disalin! 🔗');
+  }
+</script>
+</body>
+</html>

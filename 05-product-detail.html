@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monstera Deliciosa — Tumbuh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest:#1C3A2F;--forest-light:#2A5242;--mint:#5DCAA5;--mint-light:#9FE1CB;--mint-pale:#D4F4EA;
+      --sage:#E1F5EE;--amber:#FAC775;--amber-dark:#EF9F27;--offwhite:#F5F2EC;--white:#FFFFFF;
+      --charcoal:#2C2C2A;--charcoal-lt:#444441;--gray:#B4B2A9;--gray-lt:#D8D6CE;
+      --border:rgba(28,58,47,0.08);--border-md:rgba(28,58,47,0.14);
+      --shadow-sm:0 2px 8px rgba(28,58,47,.07);--shadow-md:0 8px 24px rgba(28,58,47,.10);
+      --shadow-lg:0 20px 48px rgba(28,58,47,.14);--shadow-xl:0 32px 64px rgba(28,58,47,.18);
+      --font-d:'Playfair Display',serif;--font-b:'DM Sans',sans-serif;--nav-h:72px;
+      --r-sm:8px;--r-md:12px;--r-lg:20px;--r-xl:28px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font-b);background:var(--offwhite);color:var(--charcoal);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}
+    button{cursor:pointer;font-family:var(--font-b);border:none;background:none;}
+
+    /* CURSOR */
+    .cursor{width:12px;height:12px;background:var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;}
+
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 4rem;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;transition:all .35s;}
+    .navbar.scrolled{background:rgba(245,242,236,.94);backdrop-filter:blur(18px);box-shadow:0 1px 0 var(--border);}
+    .nav-logo{font-family:var(--font-d);font-size:1.6rem;font-weight:700;color:var(--forest);letter-spacing:-.02em;}
+    .nav-logo .dot{color:var(--mint);}
+    .nav-links{display:flex;align-items:center;gap:2.25rem;}
+    .nav-links a{font-size:.875rem;color:var(--charcoal-lt);position:relative;transition:color .2s;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--mint);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--forest);}
+    .nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);}
+    .nav-actions{display:flex;align-items:center;gap:1rem;}
+    .nav-cart{position:relative;width:38px;height:38px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;}
+    .nav-cart:hover{background:var(--mint-pale);transform:scale(1.05);}
+    .nav-cart-count{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--amber-dark);color:var(--white);font-size:.6rem;font-weight:700;border-radius:50%;display:none;align-items:center;justify-content:center;}
+    .nav-btn{padding:.55rem 1.3rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.85rem;font-weight:500;transition:all .2s;}
+    .nav-btn:hover{background:var(--forest-light);transform:translateY(-1px);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .3s;}
+    .mobile-nav{display:none;position:fixed;inset:0;background:var(--forest);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:1.75rem;}
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:var(--font-d);font-size:2.2rem;font-weight:700;color:rgba(255,255,255,.85);transition:color .2s;opacity:0;transform:translateY(20px);animation:fadeUp .45s ease forwards;}
+    .mobile-nav a:nth-child(2){animation-delay:.05s}.mobile-nav a:nth-child(3){animation-delay:.12s}.mobile-nav a:nth-child(4){animation-delay:.19s}.mobile-nav a:nth-child(5){animation-delay:.26s}.mobile-nav a:nth-child(6){animation-delay:.33s}
+    .mobile-nav a:hover{color:var(--mint);}
+    .mobile-close{position:absolute;top:1.25rem;right:1.5rem;color:var(--white);font-size:1.8rem;opacity:.7;}
+
+    /* BREADCRUMB BAR */
+    .breadcrumb-bar{padding:calc(var(--nav-h)+1.5rem) 4rem 1.5rem;max-width:1280px;margin:0 auto;}
+    .breadcrumb{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--gray);}
+    .breadcrumb a{color:var(--charcoal-lt);transition:color .2s;}
+    .breadcrumb a:hover{color:var(--forest);}
+    .breadcrumb span{color:var(--gray-lt);}
+
+    /* MAIN PRODUCT LAYOUT */
+    .main{max-width:1280px;margin:0 auto;padding:0 4rem 6rem;}
+    .pdp-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+
+    /* ── LEFT: GALLERY ── */
+    .gallery{}
+    .main-img{border-radius:var(--r-xl);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:13rem;position:relative;overflow:hidden;cursor:zoom-in;transition:all .3s;margin-bottom:1rem;}
+    .main-img:hover .zoom-hint{opacity:1;}
+    .main-emoji{display:block;animation:float 6s ease-in-out infinite;position:relative;z-index:1;}
+    .img-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.18));}
+    .zoom-hint{position:absolute;bottom:1.25rem;right:1.25rem;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-radius:var(--r-full);padding:.35rem .85rem;font-size:.72rem;font-weight:500;color:var(--charcoal);opacity:0;transition:opacity .2s;z-index:2;}
+    .img-badges{position:absolute;top:1.25rem;left:1.25rem;display:flex;flex-direction:column;gap:.4rem;z-index:2;}
+    .badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.67rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:.28rem .75rem;border-radius:var(--r-full);}
+    .badge-hot{background:var(--amber);color:var(--charcoal);}
+    .badge-new{background:var(--forest);color:var(--white);}
+    .badge-avail{background:rgba(93,202,165,.18);color:var(--mint);border:1px solid rgba(93,202,165,.3);}
+    .thumbs{display:flex;gap:.75rem;}
+    .thumb-btn{flex:1;aspect-ratio:1/1;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:2.2rem;border:2px solid transparent;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;}
+    .thumb-btn:hover{transform:translateY(-2px);}
+    .thumb-btn.active{border-color:var(--forest);box-shadow:0 0 0 3px rgba(28,58,47,.12);}
+
+    /* ── RIGHT: INFO ── */
+    .prod-info{}
+    .prod-status-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+    .prod-name{font-family:var(--font-d);font-size:clamp(1.8rem,3vw,2.5rem);font-weight:900;color:var(--forest);line-height:1.1;letter-spacing:-.025em;margin-bottom:.4rem;}
+    .prod-latin{font-style:italic;color:var(--gray);font-size:.9rem;margin-bottom:1.25rem;}
+    .rating-row{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;}
+    .stars{color:var(--amber);font-size:1rem;letter-spacing:.05em;}
+    .rating-num{font-size:.9rem;font-weight:600;color:var(--charcoal);}
+    .rating-count{font-size:.82rem;color:var(--gray);}
+    .rating-sep{width:3px;height:3px;background:var(--gray-lt);border-radius:50%;}
+    .sold-count{font-size:.82rem;color:var(--mint);font-weight:500;}
+
+    /* Price */
+    .price-block{margin-bottom:2rem;padding:1.25rem;background:var(--sage);border-radius:var(--r-lg);}
+    .price-old{font-size:.85rem;color:var(--gray);text-decoration:line-through;margin-bottom:.25rem;}
+    .price-main{font-family:var(--font-d);font-size:2.2rem;font-weight:700;color:var(--forest);line-height:1;margin-bottom:.3rem;}
+    .price-note{font-size:.78rem;color:var(--charcoal-lt);}
+    .price-discount{display:inline-block;background:var(--amber);color:var(--charcoal);font-size:.72rem;font-weight:600;padding:.2rem .6rem;border-radius:var(--r-full);margin-left:.5rem;vertical-align:middle;}
+
+    /* Size selector */
+    .option-label{font-size:.82rem;font-weight:500;color:var(--charcoal);margin-bottom:.6rem;}
+    .option-label span{color:var(--forest);font-weight:600;}
+    .size-btns{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.75rem;}
+    .size-btn{padding:.55rem 1.2rem;border-radius:var(--r-full);border:1.5px solid var(--border-md);background:var(--white);font-size:.85rem;font-weight:500;color:var(--charcoal-lt);cursor:pointer;transition:all .2s;}
+    .size-btn:hover{border-color:var(--forest);color:var(--forest);}
+    .size-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest);}
+    .size-btn.out{opacity:.4;pointer-events:none;text-decoration:line-through;}
+
+    /* Qty + CTA */
+    .cta-row{display:flex;gap:.85rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;}
+    .qty-wrap{display:flex;align-items:center;background:var(--white);border:1.5px solid var(--gray-lt);border-radius:var(--r-full);padding:.35rem .75rem;gap:.5rem;flex-shrink:0;}
+    .qty-btn{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--charcoal-lt);transition:all .18s;background:none;border:none;cursor:pointer;}
+    .qty-btn:hover{background:var(--sage);color:var(--forest);}
+    .qty-num{font-size:.95rem;font-weight:500;min-width:24px;text-align:center;}
+    .btn-primary{flex:1;padding:.9rem 1.5rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.9rem;font-weight:500;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .3s;position:relative;overflow:hidden;border:none;cursor:pointer;min-width:180px;}
+    .btn-primary::before{content:'';position:absolute;inset:0;background:var(--mint);transform:translateX(-102%);transition:transform .4s;z-index:0;}
+    .btn-primary:hover::before{transform:translateX(0);}
+    .btn-primary:hover{color:var(--forest);transform:translateY(-2px);box-shadow:var(--shadow-md);}
+    .btn-primary span{position:relative;z-index:1;}
+    .btn-secondary{padding:.9rem 1.5rem;border:1.5px solid var(--forest);border-radius:var(--r-full);font-size:.9rem;font-weight:500;color:var(--forest);display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .2s;cursor:pointer;background:none;white-space:nowrap;}
+    .btn-secondary:hover{background:var(--forest);color:var(--white);}
+    .btn-wish{width:100%;padding:.75rem;border:1.5px dashed var(--gray-lt);border-radius:var(--r-full);font-size:.85rem;color:var(--gray);display:flex;align-items:center;justify-content:center;gap:.4rem;transition:all .2s;cursor:pointer;background:none;margin-bottom:2rem;}
+    .btn-wish:hover{border-color:var(--mint);color:var(--mint);}
+    .btn-wish.wished{border-color:var(--mint);color:var(--mint);background:var(--mint-pale);}
+
+    /* Info pills */
+    .info-pills{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;padding-top:1.75rem;border-top:1px solid var(--border);}
+    .info-pill{display:flex;align-items:flex-start;gap:.6rem;padding:.85rem;background:var(--offwhite);border-radius:var(--r-md);}
+    .pill-icon{font-size:1.3rem;flex-shrink:0;}
+    .pill-label{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mint);margin-bottom:.15rem;}
+    .pill-val{font-size:.82rem;font-weight:500;color:var(--forest);}
+
+    /* Guarantees */
+    .guarantees{display:flex;flex-direction:column;gap:.5rem;margin-top:1.5rem;padding:1rem 1.25rem;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);}
+    .guarantee{display:flex;align-items:center;gap:.6rem;font-size:.8rem;color:var(--charcoal-lt);}
+
+    /* ── TABS ── */
+    .tabs-wrap{margin-top:5rem;}
+    .tab-nav{display:flex;border-bottom:2px solid var(--border);margin-bottom:2.5rem;}
+    .tab-btn{padding:.8rem 1.75rem;background:none;border:none;font-family:var(--font-b);font-size:.9rem;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
+    .tab-btn.active,.tab-btn:hover{color:var(--forest);}
+    .tab-btn.active{border-bottom-color:var(--forest);font-weight:500;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+
+    /* Description tab */
+    .desc-text p{font-size:.95rem;line-height:1.85;color:var(--charcoal-lt);margin-bottom:1rem;}
+    .desc-text h3{font-family:var(--font-d);font-size:1.15rem;color:var(--forest);margin:1.5rem 0 .6rem;}
+
+    /* Care tab */
+    .care-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+    .care-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;display:flex;flex-direction:column;gap:.4rem;transition:all .25s;}
+    .care-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+    .care-icon{font-size:1.6rem;}
+    .care-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mint);}
+    .care-val{font-size:.9rem;font-weight:600;color:var(--forest);}
+    .care-note{font-size:.78rem;color:var(--gray);line-height:1.5;}
+
+    /* Reviews tab */
+    .review-summary{display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;margin-bottom:2rem;}
+    .review-big{text-align:center;}
+    .review-score{font-family:var(--font-d);font-size:4rem;font-weight:900;color:var(--forest);line-height:1;}
+    .review-stars-big{font-size:1.3rem;color:var(--amber);margin:.25rem 0;}
+    .review-total{font-size:.8rem;color:var(--gray);}
+    .rating-bars{display:flex;flex-direction:column;gap:.5rem;}
+    .rating-bar-row{display:flex;align-items:center;gap:.75rem;font-size:.78rem;}
+    .rating-bar-label{width:16px;text-align:right;color:var(--charcoal-lt);flex-shrink:0;}
+    .rating-bar-track{flex:1;height:7px;background:var(--gray-lt);border-radius:var(--r-full);overflow:hidden;}
+    .rating-bar-fill{height:100%;background:var(--amber);border-radius:var(--r-full);}
+    .rating-bar-count{width:28px;color:var(--gray);flex-shrink:0;}
+    .reviews-list{display:flex;flex-direction:column;gap:1.25rem;}
+    .review-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;}
+    .review-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.85rem;}
+    .reviewer{display:flex;align-items:center;gap:.75rem;}
+    .reviewer-avatar{width:38px;height:38px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .reviewer-name{font-size:.875rem;font-weight:500;color:var(--charcoal);}
+    .reviewer-date{font-size:.72rem;color:var(--gray);margin-top:.1rem;}
+    .review-stars{color:var(--amber);font-size:.9rem;}
+    .review-text{font-size:.875rem;color:var(--charcoal-lt);line-height:1.7;}
+    .review-helpful{margin-top:.85rem;font-size:.75rem;color:var(--gray);display:flex;align-items:center;gap:.5rem;}
+    .helpful-btn{padding:.25rem .65rem;border:1px solid var(--gray-lt);border-radius:var(--r-full);font-size:.72rem;cursor:pointer;background:none;color:var(--gray);transition:all .18s;}
+    .helpful-btn:hover{border-color:var(--forest);color:var(--forest);}
+
+    /* ── RELATED PRODUCTS ── */
+    .related-section{max-width:1280px;margin:0 auto;padding:0 4rem 6rem;}
+    .related-section h2{font-family:var(--font-d);font-size:1.7rem;font-weight:700;color:var(--forest);margin-bottom:2rem;}
+    .related-section h2 em{font-style:italic;color:var(--mint);}
+    .related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
+    .prod-card-sm{background:var(--white);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);display:block;color:inherit;transition:all .32s;}
+    .prod-card-sm:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);}
+    .prod-card-sm:hover .sm-emoji{transform:scale(1.1) rotate(-3deg);}
+    .sm-img{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:4rem;}
+    .sm-emoji{display:block;transition:transform .4s cubic-bezier(.34,1.56,.64,1);}
+    .sm-body{padding:1rem 1.1rem 1.15rem;}
+    .sm-cat{font-size:.67rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--mint);margin-bottom:.25rem;}
+    .sm-name{font-family:var(--font-d);font-size:.95rem;font-weight:700;color:var(--forest);line-height:1.25;margin-bottom:.7rem;}
+    .sm-footer{display:flex;align-items:center;justify-content:space-between;}
+    .sm-price{font-size:.95rem;font-weight:500;color:var(--charcoal);}
+    .btn-sm-cart{width:34px;height:34px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s;border:none;cursor:pointer;}
+    .btn-sm-cart:hover{background:var(--forest);}
+
+    /* STICKY ADD TO CART BAR (mobile) */
+    .sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);padding:1rem 1.5rem;z-index:200;gap:.75rem;align-items:center;box-shadow:0 -4px 20px rgba(28,58,47,.1);}
+    .sticky-price{font-family:var(--font-d);font-size:1.2rem;font-weight:700;color:var(--forest);}
+    .sticky-cta .btn-primary{flex:1;}
+
+    /* FOOTER */
+    footer{background:var(--charcoal);color:var(--white);padding:5rem 4rem 2rem;}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:4rem;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:2rem;max-width:1280px;margin-left:auto;margin-right:auto;}
+    .f-logo{font-family:var(--font-d);font-size:1.9rem;font-weight:700;color:var(--white);margin-bottom:.85rem;}
+    .f-logo .dot{color:var(--mint);}
+    .f-desc{font-size:.875rem;color:rgba(255,255,255,.38);line-height:1.75;margin-bottom:1.5rem;}
+    .f-socials{display:flex;gap:.6rem;}
+    .f-social{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:rgba(255,255,255,.55);transition:all .2s;}
+    .f-social:hover{border-color:var(--mint);background:rgba(93,202,165,.1);color:var(--mint);}
+    .f-col-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1.1rem;}
+    .f-links{display:flex;flex-direction:column;gap:.7rem;}
+    .f-links a{font-size:.875rem;color:rgba(255,255,255,.55);transition:color .2s;}
+    .f-links a:hover{color:var(--mint);}
+    .f-bottom{display:flex;justify-content:space-between;align-items:center;max-width:1280px;margin:0 auto;}
+    .f-copy{font-size:.78rem;color:rgba(255,255,255,.22);}
+
+    .scroll-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--forest);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;z-index:500;opacity:0;pointer-events:none;transition:all .3s;box-shadow:var(--shadow-md);}
+    .scroll-top.visible{opacity:1;pointer-events:auto;}
+    .scroll-top:hover{background:var(--forest-light);transform:translateY(-2px);}
+    .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem;}
+    .toast{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.1rem;background:var(--charcoal);color:var(--white);border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease;border-left:3px solid var(--mint);min-width:240px;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}.reveal-d3{transition-delay:.24s}
+
+    @media(max-width:1024px){
+      .navbar{padding:0 2rem;}.breadcrumb-bar,.main,.related-section{padding-left:2rem;padding-right:2rem;}
+      .pdp-grid{grid-template-columns:1fr;gap:3rem;}
+      .related-grid{grid-template-columns:repeat(2,1fr);}
+      footer{padding:4rem 2rem 1.5rem;}.footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem;}
+      .care-grid{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:768px){
+      .navbar{padding:0 1.25rem;}.nav-links,.nav-btn{display:none;}.hamburger{display:flex;}
+      .breadcrumb-bar,.main,.related-section{padding-left:1.25rem;padding-right:1.25rem;}
+      .breadcrumb-bar{padding-top:calc(var(--nav-h)+1rem);}
+      .cta-row{flex-wrap:wrap;}
+      .sticky-cta{display:flex;}
+      .related-grid{grid-template-columns:repeat(2,1fr);}
+      footer{padding:3rem 1.25rem 5rem;}.footer-grid{grid-template-columns:1fr;gap:2rem;}
+      .f-bottom{flex-direction:column;gap:.5rem;text-align:center;}
+      .review-summary{grid-template-columns:1fr;gap:1.5rem;}
+      .care-grid{grid-template-columns:1fr 1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="index.html">Beranda</a>
+  <a href="04-catalog.html">Katalog</a>
+  <a href="02-articles.html">Artikel</a>
+  <a href="06-cart.html">Keranjang</a>
+  <a href="#">Akun</a>
+</div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">Tumbuh<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="04-catalog.html" class="active">Katalog</a></li>
+    <li><a href="02-articles.html">Artikel</a></li>
+    <li><a href="#">Tentang</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="06-cart.html" class="nav-cart">🛒<span class="nav-cart-count" id="cartCount">0</span></a>
+    <a href="#" class="nav-btn">Masuk</a>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+  <div class="breadcrumb">
+    <a href="index.html">Beranda</a><span>›</span>
+    <a href="04-catalog.html">Katalog</a><span>›</span>
+    <a href="04-catalog.html">Indoor</a><span>›</span>
+    <span style="color:var(--charcoal);">Monstera Deliciosa</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="pdp-grid">
+
+    <!-- ── GALLERY ── -->
+    <div class="gallery reveal">
+      <div class="main-img" id="mainImg" style="background:linear-gradient(135deg,#1C3A2F,#2A5242);">
+        <div class="img-badges">
+          <span class="badge badge-hot">🔥 Terlaris</span>
+          <span class="badge badge-avail">✓ Tersedia</span>
+        </div>
+        <span class="main-emoji" id="mainEmoji">🪴</span>
+        <div class="img-overlay"></div>
+        <span class="zoom-hint">🔍 Klik untuk zoom</span>
+      </div>
+      <div class="thumbs">
+        <button class="thumb-btn active" style="background:linear-gradient(135deg,#1C3A2F,#2A5242);" onclick="setImg(this,'🪴','linear-gradient(135deg,#1C3A2F,#2A5242)')">🪴</button>
+        <button class="thumb-btn" style="background:linear-gradient(135deg,#2A5242,#3D6B58);" onclick="setImg(this,'🌿','linear-gradient(135deg,#2A5242,#3D6B58)')">🌿</button>
+        <button class="thumb-btn" style="background:linear-gradient(135deg,#3D6B58,#5DCAA5);" onclick="setImg(this,'🍃','linear-gradient(135deg,#3D6B58,#5DCAA5)')">🍃</button>
+        <button class="thumb-btn" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);" onclick="setImg(this,'🌱','linear-gradient(135deg,#E1F5EE,#9FE1CB)')">🌱</button>
+      </div>
+    </div>
+
+    <!-- ── INFO ── -->
+    <div class="prod-info reveal reveal-d2">
+      <div class="prod-status-row">
+        <span class="badge badge-avail">✓ Stok Tersedia</span>
+        <span class="badge" style="background:var(--sage);color:var(--forest);">🌱 Indoor</span>
+        <span class="badge" style="background:var(--offwhite);color:var(--charcoal-lt);border:1px solid var(--border-md);">Mudah Dirawat</span>
+      </div>
+
+      <h1 class="prod-name">Monstera Deliciosa</h1>
+      <p class="prod-latin">Monstera deliciosa · Famili Araceae</p>
+
+      <div class="rating-row">
+        <span class="stars">★★★★★</span>
+        <span class="rating-num">4.9</span>
+        <span class="rating-count">(247 ulasan)</span>
+        <span class="rating-sep"></span>
+        <span class="sold-count">1.2k terjual</span>
+      </div>
+
+      <!-- Price -->
+      <div class="price-block">
+        <div class="price-old">Rp 220.000 <span class="price-discount">-16%</span></div>
+        <div class="price-main">Rp 185.000</div>
+        <div class="price-note">Termasuk packaging khusus tanaman · Gratis ongkir Surabaya</div>
+      </div>
+
+      <!-- Size -->
+      <div class="option-label">Ukuran: <span id="selectedSize">Medium (30–40 cm)</span></div>
+      <div class="size-btns">
+        <button class="size-btn" onclick="selectSize(this,'Mini (15–20 cm)','Rp 95.000')">Mini</button>
+        <button class="size-btn active" onclick="selectSize(this,'Medium (30–40 cm)','Rp 185.000')">Medium</button>
+        <button class="size-btn" onclick="selectSize(this,'Large (50–60 cm)','Rp 320.000')">Large</button>
+        <button class="size-btn out">XL (Habis)</button>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-row">
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span class="qty-num" id="qtyNum">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+        <button class="btn-primary" onclick="addToCart()">
+          <span>🛒 Tambah ke Keranjang</span>
+        </button>
+        <button class="btn-secondary" onclick="buyNow()">Beli Sekarang</button>
+      </div>
+
+      <button class="btn-wish" id="wishBtn" onclick="toggleWish()">
+        🤍 Tambahkan ke Wishlist
+      </button>
+
+      <!-- Info pills -->
+      <div class="info-pills">
+        <div class="info-pill"><span class="pill-icon">☀️</span><div><div class="pill-label">Cahaya</div><div class="pill-val">Tidak Langsung</div></div></div>
+        <div class="info-pill"><span class="pill-icon">💧</span><div><div class="pill-label">Penyiraman</div><div class="pill-val">7–10 Hari</div></div></div>
+        <div class="info-pill"><span class="pill-icon">🌡️</span><div><div class="pill-label">Suhu Ideal</div><div class="pill-val">18–27°C</div></div></div>
+        <div class="info-pill"><span class="pill-icon">📦</span><div><div class="pill-label">Pengiriman</div><div class="pill-val">2–4 Hari Kerja</div></div></div>
+      </div>
+
+      <!-- Guarantees -->
+      <div class="guarantees">
+        <div class="guarantee">🔒 Pembayaran 100% aman & terenkripsi</div>
+        <div class="guarantee">📦 Garansi tanaman tiba dalam kondisi segar</div>
+        <div class="guarantee">↩️ Pengembalian mudah dalam 7 hari</div>
+        <div class="guarantee">🌿 Packaging ramah lingkungan</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── TABS ── -->
+  <div class="tabs-wrap reveal">
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="showTab(this,'desc')">Deskripsi</button>
+      <button class="tab-btn" onclick="showTab(this,'care')">Panduan Perawatan</button>
+      <button class="tab-btn" onclick="showTab(this,'review')">Ulasan (247)</button>
+    </div>
+
+    <!-- Description -->
+    <div class="tab-content active" id="tab-desc">
+      <div class="desc-text">
+        <p>Monstera deliciosa adalah tanaman hias ikonik asal Amerika Tengah yang dikenal dengan daun berlubangnya yang unik dan dramatis. Nama "deliciosa" berasal dari buahnya yang bisa dimakan, memiliki rasa seperti campuran nanas dan pisang.</p>
+        <h3>Mengapa Memilih Monstera?</h3>
+        <p>Tanaman ini sangat cocok untuk dekorasi interior modern, Scandinavian, maupun Biophilic. Kemampuannya beradaptasi di lingkungan indoor menjadikannya pilihan favorit para pecinta tanaman hias, dari pemula hingga kolektor serius.</p>
+        <p>Dengan perawatan yang tepat, Monstera bisa tumbuh hingga 2 meter di dalam ruangan dan menghasilkan daun-daun baru yang semakin besar dan berlubang seiring waktu. Setiap daun baru adalah kejutan yang menyenangkan!</p>
+        <h3>Yang Kamu Dapatkan</h3>
+        <p>Setiap pembelian sudah termasuk: tanaman Monstera dalam pot plastik sementara, panduan perawatan tertulis, media tanam premium, dan packaging kayu khusus yang aman untuk pengiriman jarak jauh.</p>
+      </div>
+    </div>
+
+    <!-- Care -->
+    <div class="tab-content" id="tab-care">
+      <div class="care-grid">
+        <div class="care-card"><span class="care-icon">☀️</span><span class="care-label">Cahaya</span><span class="care-val">Bright Indirect Light</span><span class="care-note">Dekat jendela menghadap timur atau barat. Hindari sinar matahari langsung yang bisa membakar daun.</span></div>
+        <div class="care-card"><span class="care-icon">💧</span><span class="care-label">Penyiraman</span><span class="care-val">7–10 Hari Sekali</span><span class="care-note">Siram saat 5 cm tanah atas sudah kering. Pastikan pot memiliki lubang drainase yang baik.</span></div>
+        <div class="care-card"><span class="care-icon">🌡️</span><span class="care-label">Suhu</span><span class="care-val">18–27°C Ideal</span><span class="care-note">Hindari suhu di bawah 15°C dan paparan angin AC langsung dalam jangka panjang.</span></div>
+        <div class="care-card"><span class="care-icon">💨</span><span class="care-label">Kelembapan</span><span class="care-val">60–80%</span><span class="care-note">Semprot daun seminggu sekali atau gunakan humidifier. Lap daun dengan kain basah untuk kilap alami.</span></div>
+        <div class="care-card"><span class="care-icon">🌱</span><span class="care-label">Pemupukan</span><span class="care-val">Setiap 4–6 Minggu</span><span class="care-note">Gunakan pupuk NPK cair seimbang, diencerkan setengah dosis dari petunjuk kemasan.</span></div>
+        <div class="care-card"><span class="care-icon">🪴</span><span class="care-label">Repotting</span><span class="care-val">Setiap 1–2 Tahun</span><span class="care-note">Pindahkan ke pot 2–3 cm lebih besar saat akar mulai keluar dari lubang bawah pot.</span></div>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="tab-content" id="tab-review">
+      <div class="review-summary">
+        <div class="review-big">
+          <div class="review-score">4.9</div>
+          <div class="review-stars-big">★★★★★</div>
+          <div class="review-total">dari 247 ulasan</div>
+        </div>
+        <div class="rating-bars">
+          <div class="rating-bar-row"><span class="rating-bar-label">5</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:88%;"></div></div><span class="rating-bar-count">218</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">4</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:9%;background:var(--mint);"></div></div><span class="rating-bar-count">22</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">3</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:2%;background:var(--gray-lt);"></div></div><span class="rating-bar-count">5</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">2</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:1%;background:var(--gray-lt);"></div></div><span class="rating-bar-count">2</span></div>
+          <div class="rating-bar-row"><span class="rating-bar-label">1</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%;background:var(--gray-lt);"></div></div><span class="rating-bar-count">0</span></div>
+        </div>
+      </div>
+      <div class="reviews-list">
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer"><div class="reviewer-avatar">🌸</div><div><div class="reviewer-name">Aulia Rahmawati</div><div class="reviewer-date">2 hari lalu · Ukuran Medium</div></div></div>
+            <span class="review-stars">★★★★★</span>
+          </div>
+          <p class="review-text">"Tanamannya tiba dalam kondisi sangat segar dan packaging-nya sangat aman. Daunnya langsung besar-besar dan sudah ada 2 daun baru dalam 3 minggu pertama. Sangat puas, pasti order lagi!"</p>
+          <div class="review-helpful">Ulasan ini membantu? <button class="helpful-btn" onclick="this.textContent='👍 Ya (12)'">👍 Ya (11)</button><button class="helpful-btn">👎 Tidak</button></div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer"><div class="reviewer-avatar">🌿</div><div><div class="reviewer-name">Rizky Pratama</div><div class="reviewer-date">1 minggu lalu · Ukuran Large</div></div></div>
+            <span class="review-stars">★★★★★</span>
+          </div>
+          <p class="review-text">"Pertama kali beli tanaman online, awalnya ragu. Tapi Tumbuh. benar-benar tidak mengecewakan. Tanaman ukuran Large tiba dengan aman, sesuai foto. Pengiriman ke Jakarta cuma 2 hari!"</p>
+          <div class="review-helpful">Ulasan ini membantu? <button class="helpful-btn" onclick="this.textContent='👍 Ya (8)'">👍 Ya (7)</button><button class="helpful-btn">👎 Tidak</button></div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer"><div class="reviewer-avatar">🪴</div><div><div class="reviewer-name">Sinta Maharani</div><div class="reviewer-date">2 minggu lalu · Ukuran Mini</div></div></div>
+            <span class="review-stars">★★★★☆</span>
+          </div>
+          <p class="review-text">"Kondisi tanaman bagus sekali, dikemas dengan styrofoam dan kardus kokoh. Daun sedikit layu saat tiba tapi langsung segar setelah disiram. Panduan perawatan yang disertakan sangat membantu untuk pemula seperti saya."</p>
+          <div class="review-helpful">Ulasan ini membantu? <button class="helpful-btn" onclick="this.textContent='👍 Ya (5)'">👍 Ya (4)</button><button class="helpful-btn">👎 Tidak</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- RELATED -->
+<section class="related-section">
+  <h2>Produk <em>Serupa</em></h2>
+  <div class="related-grid">
+    <a href="05-product-detail.html" class="prod-card-sm reveal">
+      <div class="sm-img" style="background:linear-gradient(135deg,#E1F5EE,#5DCAA5);"><span class="sm-emoji">🌿</span></div>
+      <div class="sm-body"><div class="sm-cat">Gantung</div><div class="sm-name">Pothos Golden</div><div class="sm-footer"><span class="sm-price">Rp 72.000</span><button class="btn-sm-cart" onclick="showToast('Pothos Golden ditambahkan! 🌿')">🛒</button></div></div>
+    </a>
+    <a href="05-product-detail.html" class="prod-card-sm reveal reveal-d1">
+      <div class="sm-img" style="background:linear-gradient(135deg,#E8F4F8,#9FD6E8);"><span class="sm-emoji">🪴</span></div>
+      <div class="sm-body"><div class="sm-cat">Indoor</div><div class="sm-name">Calathea Orbifolia</div><div class="sm-footer"><span class="sm-price">Rp 175.000</span><button class="btn-sm-cart" onclick="showToast('Calathea ditambahkan! 🌿')">🛒</button></div></div>
+    </a>
+    <a href="05-product-detail.html" class="prod-card-sm reveal reveal-d2">
+      <div class="sm-img" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);"><span class="sm-emoji">🌱</span></div>
+      <div class="sm-body"><div class="sm-cat">Indoor</div><div class="sm-name">Lidah Mertua</div><div class="sm-footer"><span class="sm-price">Rp 95.000</span><button class="btn-sm-cart" onclick="showToast('Lidah Mertua ditambahkan! 🌿')">🛒</button></div></div>
+    </a>
+    <a href="05-product-detail.html" class="prod-card-sm reveal reveal-d3">
+      <div class="sm-img" style="background:linear-gradient(135deg,#FDF3E0,#FAC775);"><span class="sm-emoji">🌵</span></div>
+      <div class="sm-body"><div class="sm-cat">Kaktus</div><div class="sm-name">Kaktus Saguaro Mini</div><div class="sm-footer"><span class="sm-price">Rp 55.000</span><button class="btn-sm-cart" onclick="showToast('Kaktus ditambahkan! 🌿')">🛒</button></div></div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo">Tumbuh<span class="dot">.</span></div>
+      <p class="f-desc">Menghadirkan keindahan alam ke dalam ruang hidupmu. Tanaman hias pilihan, dikirim dengan cinta ke seluruh Indonesia.</p>
+      <div class="f-socials"><a class="f-social" href="#">📷</a><a class="f-social" href="#">🐦</a><a class="f-social" href="#">💼</a><a class="f-social" href="#">▶️</a></div>
+    </div>
+    <div><div class="f-col-title">Katalog</div><ul class="f-links"><li><a href="04-catalog.html">Tanaman Indoor</a></li><li><a href="04-catalog.html">Tanaman Outdoor</a></li><li><a href="04-catalog.html">Kaktus & Sukulen</a></li></ul></div>
+    <div><div class="f-col-title">Informasi</div><ul class="f-links"><li><a href="02-articles.html">Blog</a></li><li><a href="#">Tentang Kami</a></li><li><a href="#">Hubungi Kami</a></li></ul></div>
+    <div><div class="f-col-title">Bantuan</div><ul class="f-links"><li><a href="#">FAQ</a></li><li><a href="#">Pengiriman</a></li><li><a href="#">Pengembalian</a></li></ul></div>
+  </div>
+  <div class="f-bottom"><div class="f-copy">© 2026 Tumbuh. Semua hak dilindungi.</div><div class="f-copy">Dibuat dengan 🌿 di Indonesia</div></div>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="sticky-cta" id="stickyCta">
+  <div><div style="font-size:.72rem;color:var(--gray);">Monstera Deliciosa · Medium</div><div class="sticky-price">Rp 185.000</div></div>
+  <button class="btn-primary" onclick="addToCart()"><span>🛒 Tambah ke Keranjang</span></button>
+</div>
+
+<button class="scroll-top" id="scrollTop">↑</button>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // CURSOR
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function anim(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
+  });
+
+  // NAVBAR
+  const navbar=document.getElementById('navbar');
+  const ctaSection=document.querySelector('.pdp-grid');
+  window.addEventListener('scroll',()=>{
+    navbar.classList.toggle('scrolled',scrollY>60);
+    document.getElementById('scrollTop').classList.toggle('visible',scrollY>500);
+    // Show sticky CTA after scrolling past product section
+    if(ctaSection){
+      const bottom=ctaSection.getBoundingClientRect().bottom;
+      document.getElementById('stickyCta').style.display=bottom<0?'flex':'none';
+    }
+  },{passive:true});
+
+  // MOBILE NAV
+  const mobileNav=document.getElementById('mobileNav');
+  document.getElementById('hamburger').addEventListener('click',()=>{mobileNav.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('mobileClose').addEventListener('click',()=>{mobileNav.classList.remove('open');document.body.style.overflow='';});
+  document.getElementById('scrollTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  // SCROLL REVEAL
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // TOAST
+  function showToast(msg,type='success'){
+    const tw=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className='toast';
+    t.innerHTML=`<span>✅</span><span>${msg}</span>`;
+    tw.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3000);
+  }
+
+  // GALLERY
+  function setImg(btn,emoji,bg){
+    document.querySelectorAll('.thumb-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('mainEmoji').textContent=emoji;
+    document.getElementById('mainImg').style.background=bg;
+  }
+
+  // SIZE
+  function selectSize(btn,label,price){
+    document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('selectedSize').textContent=label;
+    document.querySelector('.price-main').textContent=price;
+    document.querySelector('.sticky-price').textContent=price;
+  }
+
+  // QTY
+  let qty=1;
+  function changeQty(d){
+    qty=Math.max(1,Math.min(99,qty+d));
+    document.getElementById('qtyNum').textContent=qty;
+  }
+
+  // CART
+  let cartN=0;
+  function addToCart(){
+    cartN+=qty;
+    const el=document.getElementById('cartCount');
+    el.textContent=cartN; el.style.display='flex';
+    showToast(`${qty}x Monstera Deliciosa ditambahkan ke keranjang 🌿`);
+  }
+  function buyNow(){ addToCart(); setTimeout(()=>window.location.href='06-cart.html',800); }
+
+  // WISHLIST
+  let wished=false;
+  function toggleWish(){
+    wished=!wished;
+    const btn=document.getElementById('wishBtn');
+    btn.textContent=wished?'❤️ Tersimpan di Wishlist':'🤍 Tambahkan ke Wishlist';
+    btn.classList.toggle('wished',wished);
+    showToast(wished?'Ditambahkan ke wishlist ❤️':'Dihapus dari wishlist','success');
+  }
+
+  // TABS
+  function showTab(btn,id){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+id).classList.add('active');
+  }
+
+  // PAGINATION
+  document.querySelectorAll('.pg-btn:not(.disabled)').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(['←','→'].includes(btn.textContent.trim()))return;
+      document.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

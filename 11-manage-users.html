@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Pengguna — Tumbuh. Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest:#1C3A2F;--forest-light:#2A5242;--mint:#5DCAA5;--mint-light:#9FE1CB;--mint-pale:#D4F4EA;
+      --sage:#E1F5EE;--amber:#FAC775;--amber-dark:#EF9F27;--amber-pale:#FDF3E0;--offwhite:#F5F2EC;--white:#FFFFFF;
+      --charcoal:#2C2C2A;--charcoal-lt:#444441;--gray:#B4B2A9;--gray-lt:#D8D6CE;
+      --border:rgba(28,58,47,0.08);--border-md:rgba(28,58,47,0.14);
+      --shadow-sm:0 2px 8px rgba(28,58,47,.07);--shadow-md:0 8px 24px rgba(28,58,47,.10);--shadow-lg:0 20px 48px rgba(28,58,47,.14);
+      --font-d:'Playfair Display',serif;--font-b:'DM Sans',sans-serif;
+      --sidebar-w:240px;
+      --r-sm:8px;--r-md:12px;--r-lg:20px;--r-xl:28px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font-b);background:#F0EDE7;color:var(--charcoal);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}
+    button{cursor:pointer;font-family:var(--font-b);border:none;background:none;}
+    input,select,textarea{font-family:var(--font-b);}
+
+    .cursor{width:12px;height:12px;background:var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;}
+
+    /* SIDEBAR */
+    .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--forest);display:flex;flex-direction:column;z-index:200;overflow-y:auto;}
+    .sidebar-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.08);}
+    .sidebar-logo-text{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--white);}
+    .sidebar-logo-text .dot{color:var(--mint);}
+    .sidebar-logo-sub{font-size:.68rem;font-weight:500;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;margin-top:.2rem;}
+    .sidebar-section{padding:.75rem 0;}
+    .sidebar-sec-label{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:.5rem 1.5rem;margin-bottom:.25rem;}
+    .sidebar-link{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.5rem;font-size:.85rem;font-weight:400;color:rgba(255,255,255,.6);transition:all .18s;border-left:3px solid transparent;cursor:pointer;}
+    .sidebar-link:hover{color:var(--white);background:rgba(255,255,255,.05);}
+    .sidebar-link.active{color:var(--mint);background:rgba(93,202,165,.1);border-left-color:var(--mint);font-weight:500;}
+    .sidebar-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0;}
+    .sidebar-badge{margin-left:auto;background:var(--amber);color:var(--charcoal);font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:var(--r-full);}
+    .sidebar-footer{margin-top:auto;padding:1.25rem 1.5rem;border-top:1px solid rgba(255,255,255,.08);}
+    .sidebar-user{display:flex;align-items:center;gap:.75rem;}
+    .sidebar-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+    .sidebar-user-name{font-size:.82rem;font-weight:500;color:var(--white);}
+    .sidebar-user-role{font-size:.7rem;color:rgba(255,255,255,.4);}
+
+    .admin-main{margin-left:var(--sidebar-w);min-height:100vh;}
+
+    /* TOPBAR */
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .topbar-left{display:flex;align-items:center;gap:.75rem;}
+    .topbar-title{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:var(--forest);}
+    .topbar-breadcrumb{font-size:.78rem;color:var(--gray);display:flex;align-items:center;gap:.35rem;}
+    .topbar-breadcrumb a{color:var(--charcoal-lt);transition:color .2s;}
+    .topbar-breadcrumb a:hover{color:var(--forest);}
+    .topbar-right{display:flex;align-items:center;gap:.75rem;}
+    .topbar-btn{padding:.45rem 1rem;border-radius:var(--r-full);font-size:.8rem;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:.35rem;border:1.5px solid;}
+    .btn-ghost{border-color:var(--gray-lt);color:var(--charcoal-lt);background:none;}
+    .btn-ghost:hover{border-color:var(--forest);color:var(--forest);}
+    .btn-primary{border-color:var(--forest);background:var(--forest);color:var(--white);}
+    .btn-primary:hover{background:var(--forest-light);}
+    .notif-btn{width:36px;height:36px;border-radius:50%;background:var(--offwhite);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all .18s;position:relative;border:none;}
+    .notif-btn:hover{background:var(--sage);}
+    .notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--amber-dark);border:2px solid var(--white);}
+
+    .content{padding:2rem;}
+
+    /* MINI STATS */
+    .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+    .mini-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;display:flex;align-items:center;gap:.85rem;transition:all .22s;}
+    .mini-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+    .mini-icon{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .mi-green{background:var(--sage);}
+    .mi-amber{background:var(--amber-pale);}
+    .mi-blue{background:#E8F4F8;}
+    .mi-red{background:#FEECEC;}
+    .mini-val{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--forest);line-height:1;}
+    .mini-label{font-size:.72rem;color:var(--gray);margin-top:.2rem;}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.85rem;margin-bottom:1.25rem;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;}
+    .toolbar-left{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;}
+    .search-wrap{position:relative;}
+    .search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none;}
+    .search-input{padding:.62rem .9rem .62rem 2.5rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);background:var(--white);font-family:var(--font-b);font-size:.82rem;color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;width:220px;}
+    .search-input:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(93,202,165,.15);}
+    .search-input::placeholder{color:var(--gray);}
+    .filter-select{padding:.6rem 1.85rem .6rem .85rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);background:var(--white);font-family:var(--font-b);font-size:.82rem;color:var(--charcoal);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23B4B2A9' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;outline:none;}
+    .filter-select:focus{border-color:var(--mint);}
+
+    /* TABLE */
+    .table-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
+    .table-header-row{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);}
+    .table-header-title{font-size:.82rem;font-weight:500;color:var(--charcoal-lt);}
+    table{width:100%;border-collapse:collapse;}
+    thead{background:var(--offwhite);}
+    th{padding:.85rem 1.25rem;text-align:left;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);border-bottom:1px solid var(--border);white-space:nowrap;}
+    th:first-child{padding-left:1.5rem;}
+    th:last-child{padding-right:1.5rem;text-align:right;}
+    td{padding:.95rem 1.25rem;font-size:.875rem;color:var(--charcoal);border-bottom:1px solid var(--border);vertical-align:middle;}
+    td:first-child{padding-left:1.5rem;}
+    td:last-child{padding-right:1.5rem;text-align:right;}
+    tbody tr{transition:background .15s;}
+    tbody tr:hover{background:#FAFAF8;}
+    tbody tr:last-child td{border-bottom:none;}
+    .cb{width:16px;height:16px;accent-color:var(--forest);cursor:pointer;}
+
+    /* User in table */
+    .user-wrap{display:flex;align-items:center;gap:.85rem;}
+    .user-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;font-weight:600;font-family:var(--font-d);}
+    .user-name{font-size:.875rem;font-weight:500;color:var(--forest);}
+    .user-email{font-size:.72rem;color:var(--gray);margin-top:.1rem;}
+
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;font-weight:600;letter-spacing:.04em;padding:.26rem .75rem;border-radius:var(--r-full);}
+    .badge-active{background:#E6F9F2;color:#0F7A57;}
+    .badge-suspended{background:#FEECEC;color:#C0392B;}
+    .badge-new{background:var(--mint-pale);color:var(--forest);}
+    .badge-admin{background:var(--forest);color:var(--white);}
+    .badge-user{background:var(--offwhite);color:var(--charcoal-lt);border:1px solid var(--border-md);}
+
+    /* Activity dots */
+    .activity-wrap{display:flex;gap:3px;}
+    .activity-dot{width:10px;height:10px;border-radius:2px;}
+
+    /* Tbl actions */
+    .tbl-actions{display:flex;gap:.4rem;justify-content:flex-end;}
+    .tbl-btn{padding:.32rem .75rem;border-radius:var(--r-sm);font-size:.72rem;font-weight:500;cursor:pointer;transition:all .15s;border:none;}
+    .tbl-edit{background:var(--sage);color:var(--forest);}
+    .tbl-edit:hover{background:var(--mint-pale);}
+    .tbl-suspend{background:var(--amber-pale);color:#966800;}
+    .tbl-suspend:hover{background:#FAE5B0;}
+    .tbl-delete{background:#FEECEC;color:#C0392B;}
+    .tbl-delete:hover{background:#FDD8D8;}
+    .tbl-activate{background:#E6F9F2;color:#0F7A57;}
+    .tbl-activate:hover{background:#C3F0DB;}
+
+    /* TABLE FOOTER */
+    .table-footer{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-top:1px solid var(--border);background:var(--offwhite);}
+    .table-count{font-size:.78rem;color:var(--gray);}
+    .pagination{display:flex;align-items:center;gap:.35rem;}
+    .pg-btn{width:32px;height:32px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:500;color:var(--charcoal-lt);border:1.5px solid var(--border);background:var(--white);cursor:pointer;transition:all .15s;}
+    .pg-btn:hover{border-color:var(--forest);color:var(--forest);}
+    .pg-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest);}
+    .pg-btn.disabled{opacity:.35;pointer-events:none;}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(28,58,47,.55);backdrop-filter:blur(6px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .modal-overlay.open{opacity:1;pointer-events:auto;}
+    .modal{background:var(--white);border-radius:var(--r-xl);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 32px 64px rgba(28,58,47,.2);transform:translateY(24px) scale(.97);transition:transform .35s;}
+    .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--white);z-index:1;}
+    .modal-title{font-family:var(--font-d);font-size:1.15rem;font-weight:700;color:var(--forest);}
+    .modal-close{width:32px;height:32px;border-radius:50%;background:var(--offwhite);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--gray);cursor:pointer;border:none;transition:all .18s;}
+    .modal-close:hover{background:var(--sage);color:var(--forest);}
+    .modal-body{padding:2rem;}
+    .modal-footer{padding:1.25rem 2rem;border-top:1px solid var(--border);display:flex;gap:.75rem;justify-content:flex-end;background:var(--offwhite);}
+
+    /* USER DETAIL MODAL */
+    .user-detail-header{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.75rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+    .user-detail-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-weight:600;font-family:var(--font-d);flex-shrink:0;}
+    .user-detail-name{font-family:var(--font-d);font-size:1.2rem;font-weight:700;color:var(--forest);}
+    .user-detail-email{font-size:.82rem;color:var(--gray);margin-top:.2rem;}
+    .detail-row{display:flex;justify-content:space-between;align-items:center;font-size:.875rem;padding:.55rem 0;border-bottom:1px solid var(--border);}
+    .detail-row:last-child{border-bottom:none;}
+    .detail-label{color:var(--gray);}
+    .detail-val{font-weight:500;color:var(--charcoal);text-align:right;}
+
+    /* FORM */
+    .form-group{margin-bottom:1.1rem;}
+    .form-label{display:block;font-size:.8rem;font-weight:500;color:var(--charcoal);margin-bottom:.4rem;}
+    .form-label span{color:#C0392B;}
+    .form-input,.form-select{width:100%;padding:.72rem 1rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-md);font-family:var(--font-b);font-size:.875rem;color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;background:var(--white);}
+    .form-input:focus,.form-select:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(93,202,165,.15);}
+    .form-input::placeholder{color:var(--gray);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+
+    /* CONFIRM MODAL */
+    .confirm-modal{background:var(--white);border-radius:var(--r-xl);max-width:400px;width:100%;padding:2rem;text-align:center;box-shadow:0 32px 64px rgba(28,58,47,.2);transform:translateY(24px);transition:transform .35s;}
+    .modal-overlay.open .confirm-modal{transform:translateY(0);}
+
+    .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem;}
+    .toast{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.1rem;background:var(--charcoal);color:var(--white);border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease;border-left:3px solid var(--mint);min-width:240px;}
+    .toast.error{border-left-color:#E74C3C;}
+    .toast.warn{border-left-color:var(--amber-dark);}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    @media(max-width:1024px){
+      .sidebar{transform:translateX(-100%);transition:transform .3s;}
+      .sidebar.mobile-open{transform:translateX(0);}
+      .admin-main{margin-left:0;}
+      .mini-stats{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:768px){
+      .content{padding:1.25rem;}
+      .toolbar{flex-direction:column;align-items:stretch;}
+      .search-input{width:100%;}
+      table{font-size:.8rem;}
+      th,td{padding:.7rem .85rem;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">Tumbuh<span class="dot">.</span></div>
+    <div class="sidebar-logo-sub">Admin Panel</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-sec-label">Menu Utama</div>
+    <a href="13-dashboard.html" class="sidebar-link"><span class="sidebar-icon">📊</span>Dashboard</a>
+    <a href="12-manage-transactions.html" class="sidebar-link"><span class="sidebar-icon">💳</span>Kelola Transaksi<span class="sidebar-badge">5</span></a>
+    <a href="10-manage-products.html" class="sidebar-link"><span class="sidebar-icon">🪴</span>Kelola Produk</a>
+    <a href="09-manage-articles.html" class="sidebar-link"><span class="sidebar-icon">📝</span>Kelola Artikel</a>
+    <a href="11-manage-users.html" class="sidebar-link active"><span class="sidebar-icon">👥</span>Kelola Pengguna</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-sec-label">Lainnya</div>
+    <a href="index.html" class="sidebar-link"><span class="sidebar-icon">🌿</span>Lihat Toko</a>
+    <a href="#" class="sidebar-link"><span class="sidebar-icon">⚙️</span>Pengaturan</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">👤</div>
+      <div>
+        <div class="sidebar-user-name">Admin Tumbuh</div>
+        <div class="sidebar-user-role">Super Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="admin-main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="notif-btn" id="sidebarToggle" style="display:none;" onclick="toggleSidebar()">☰</button>
+      <div>
+        <div class="topbar-title">Kelola Pengguna</div>
+        <div class="topbar-breadcrumb">
+          <a href="13-dashboard.html">Dashboard</a><span>›</span><span>Kelola Pengguna</span>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn" onclick="showToast('Tidak ada notifikasi baru','warn')">🔔<span class="notif-dot"></span></button>
+      <button class="topbar-btn btn-ghost" onclick="showToast('Data diekspor ke CSV 📥')">⬇ Export</button>
+      <button class="topbar-btn btn-primary" onclick="openModal('addUserModal')">＋ Tambah Admin</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- MINI STATS -->
+    <div class="mini-stats reveal">
+      <div class="mini-card"><div class="mini-icon mi-green">👥</div><div><div class="mini-val">1.240</div><div class="mini-label">Total Pengguna</div></div></div>
+      <div class="mini-card"><div class="mini-icon mi-blue">✅</div><div><div class="mini-val">1.198</div><div class="mini-label">Aktif</div></div></div>
+      <div class="mini-card"><div class="mini-icon mi-amber">⭐</div><div><div class="mini-val">42</div><div class="mini-label">Pengguna Baru (7 hari)</div></div></div>
+      <div class="mini-card"><div class="mini-icon mi-red">🚫</div><div><div class="mini-val">12</div><div class="mini-label">Ditangguhkan</div></div></div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar reveal">
+      <div class="toolbar-left">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Cari nama atau email..." id="searchInput">
+        </div>
+        <select class="filter-select" id="filterRole">
+          <option value="">Semua Role</option>
+          <option value="Admin">Admin</option>
+          <option value="User">User</option>
+        </select>
+        <select class="filter-select" id="filterStatus">
+          <option value="">Semua Status</option>
+          <option value="Aktif">Aktif</option>
+          <option value="Ditangguhkan">Ditangguhkan</option>
+          <option value="Baru">Baru</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <span style="font-size:.78rem;color:var(--gray);" id="selectedCount"></span>
+        <button class="topbar-btn btn-ghost" id="bulkBtn" style="display:none;" onclick="bulkAction()">⚡ Aksi Massal</button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap reveal">
+      <div class="table-header-row">
+        <span class="table-header-title" id="tableCount">Menampilkan 10 pengguna</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="cb" id="selectAll" onchange="toggleSelectAll()"></th>
+            <th>Pengguna</th>
+            <th>Role</th>
+            <th>Total Pesanan</th>
+            <th>Total Belanja</th>
+            <th>Bergabung</th>
+            <th>Aktivitas</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="table-footer">
+        <span class="table-count" id="tableFootCount">1–10 dari 1.240 pengguna</span>
+        <div class="pagination">
+          <button class="pg-btn disabled">←</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <span style="color:var(--gray);padding:0 .25rem;font-size:.8rem;">···</span>
+          <button class="pg-btn">124</button>
+          <button class="pg-btn">→</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- USER DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Detail Pengguna</div>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="user-detail-header">
+        <div class="user-detail-avatar" id="detailAvatar" style="background:var(--sage);">A</div>
+        <div>
+          <div class="user-detail-name" id="detailName">–</div>
+          <div class="user-detail-email" id="detailEmail">–</div>
+          <div style="margin-top:.5rem;" id="detailBadge"></div>
+        </div>
+      </div>
+      <div class="detail-row"><span class="detail-label">Role</span><span class="detail-val" id="detailRole">–</span></div>
+      <div class="detail-row"><span class="detail-label">Status</span><span class="detail-val" id="detailStatus">–</span></div>
+      <div class="detail-row"><span class="detail-label">Tanggal Bergabung</span><span class="detail-val" id="detailJoined">–</span></div>
+      <div class="detail-row"><span class="detail-label">Terakhir Login</span><span class="detail-val" id="detailLastLogin">–</span></div>
+      <div class="detail-row"><span class="detail-label">Total Pesanan</span><span class="detail-val" id="detailOrders">–</span></div>
+      <div class="detail-row"><span class="detail-label">Total Belanja</span><span class="detail-val" id="detailSpend">–</span></div>
+      <div class="detail-row"><span class="detail-label">Kota</span><span class="detail-val" id="detailCity">–</span></div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('detailModal')">Tutup</button>
+      <button class="topbar-btn" style="background:var(--amber-dark);border-color:var(--amber-dark);color:var(--white);" id="detailSuspendBtn" onclick="handleSuspend()">⚠ Tangguhkan</button>
+      <button class="topbar-btn btn-primary" onclick="handleEdit()">✏️ Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT USER MODAL -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <div class="modal-title" id="addModalTitle">Tambah Admin Baru</div>
+      <button class="modal-close" onclick="closeModal('addUserModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nama Depan <span>*</span></label>
+          <input type="text" class="form-input" placeholder="Nama depan..." id="uFirstName">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nama Belakang</label>
+          <input type="text" class="form-input" placeholder="Nama belakang..." id="uLastName">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email <span>*</span></label>
+        <input type="email" class="form-input" placeholder="email@example.com" id="uEmail">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Role <span>*</span></label>
+          <select class="form-select" id="uRole">
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="uStatus">
+            <option value="Aktif">Aktif</option>
+            <option value="Ditangguhkan">Ditangguhkan</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password Sementara <span>*</span></label>
+        <input type="password" class="form-input" placeholder="Min. 8 karakter..." id="uPassword">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nomor Telepon</label>
+        <input type="text" class="form-input" placeholder="+62..." id="uPhone">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('addUserModal')">Batal</button>
+      <button class="topbar-btn btn-primary" onclick="saveUser()">✓ Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="confirm-modal">
+    <div style="font-size:3.5rem;margin-bottom:1rem;" id="confirmIcon">⚠️</div>
+    <div style="font-family:var(--font-d);font-size:1.2rem;font-weight:700;color:var(--forest);margin-bottom:.6rem;" id="confirmTitle">Tangguhkan Pengguna?</div>
+    <p style="font-size:.875rem;color:var(--charcoal-lt);line-height:1.65;margin-bottom:1.5rem;" id="confirmMsg">Pengguna tidak dapat login sampai ditaktifkan kembali.</p>
+    <div style="display:flex;gap:.75rem;justify-content:center;">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('confirmModal')">Batal</button>
+      <button class="topbar-btn" id="confirmBtn" style="background:var(--amber-dark);border-color:var(--amber-dark);color:var(--white);">Ya, Tangguhkan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  const users = [
+    {id:1,name:'Aulia Rahmawati',email:'aulia.r@email.com',role:'User',status:'Aktif',orders:8,spend:1850000,joined:'12 Jan 2026',lastLogin:'2 hari lalu',city:'Surabaya',avatar:'🌸',color:'#D4F4EA'},
+    {id:2,name:'Rizky Pratama',email:'rizky.p@email.com',role:'User',status:'Aktif',orders:12,spend:3200000,joined:'3 Feb 2026',lastLogin:'Hari ini',city:'Jakarta',avatar:'🌿',color:'#E1F5EE'},
+    {id:3,name:'Sinta Maharani',email:'sinta.m@email.com',role:'User',status:'Baru',orders:2,spend:420000,joined:'15 Mei 2026',lastLogin:'Kemarin',city:'Bandung',avatar:'🪴',color:'#E1F5EE'},
+    {id:4,name:'Dimas Aditya',email:'dimas.a@email.com',role:'User',status:'Aktif',orders:5,spend:980000,joined:'20 Mar 2026',lastLogin:'3 hari lalu',city:'Yogyakarta',avatar:'🌺',color:'#FAEEDA'},
+    {id:5,name:'Laila Nursyahidah',email:'laila.n@email.com',role:'User',status:'Aktif',orders:15,spend:4100000,joined:'5 Des 2025',lastLogin:'1 jam lalu',city:'Surabaya',avatar:'🌸',color:'#D4F4EA'},
+    {id:6,name:'Admin Tumbuh',email:'admin@tumbuh.id',role:'Admin',status:'Aktif',orders:0,spend:0,joined:'1 Jan 2026',lastLogin:'Hari ini',city:'Surabaya',avatar:'👤',color:'#E8F4F8'},
+    {id:7,name:'Budi Santoso',email:'budi.s@email.com',role:'User',status:'Ditangguhkan',orders:3,spend:650000,joined:'8 Feb 2026',lastLogin:'30 hari lalu',city:'Medan',avatar:'🌱',color:'#E1F5EE'},
+    {id:8,name:'Nadia Putri',email:'nadia.p@email.com',role:'User',status:'Aktif',orders:7,spend:1560000,joined:'14 Apr 2026',lastLogin:'5 hari lalu',city:'Makassar',avatar:'📷',color:'#FDF3E0'},
+    {id:9,name:'Eko Prasetyo',email:'eko.p@email.com',role:'User',status:'Aktif',orders:9,spend:2100000,joined:'22 Nov 2025',lastLogin:'Kemarin',city:'Semarang',avatar:'🌿',color:'#E1F5EE'},
+    {id:10,name:'Maya Sari',email:'maya.s@email.com',role:'User',status:'Baru',orders:1,spend:185000,joined:'18 Mei 2026',lastLogin:'Hari ini',city:'Bali',avatar:'🌺',color:'#FAEEDA'},
+  ];
+
+  let selectedIds = new Set();
+  let activeUserId = null;
+
+  const fmt = n => n > 0 ? 'Rp '+n.toLocaleString('id-ID') : '–';
+
+  function statusBadge(s){
+    const map = {
+      'Aktif':'<span class="badge badge-active">● Aktif</span>',
+      'Ditangguhkan':'<span class="badge badge-suspended">● Ditangguhkan</span>',
+      'Baru':'<span class="badge badge-new">✨ Baru</span>',
+    };
+    return map[s]||s;
+  }
+  function roleBadge(r){
+    return r==='Admin'
+      ? '<span class="badge badge-admin">🔑 Admin</span>'
+      : '<span class="badge badge-user">👤 User</span>';
+  }
+
+  function activityDots(lastLogin){
+    const active = lastLogin.includes('hari ini')||lastLogin.includes('Hari ini')||lastLogin.includes('jam')||lastLogin.includes('Kemarin');
+    const colors = active
+      ? ['#5DCAA5','#5DCAA5','#5DCAA5','#D8D6CE','#D8D6CE']
+      : ['#5DCAA5','#D8D6CE','#D8D6CE','#D8D6CE','#D8D6CE'];
+    return `<div class="activity-wrap">${colors.map(c=>`<div class="activity-dot" style="background:${c};"></div>`).join('')}</div>`;
+  }
+
+  function renderTable(list){
+    const tbody=document.getElementById('tableBody');
+    document.getElementById('tableCount').textContent=`Menampilkan ${list.length} pengguna`;
+    document.getElementById('tableFootCount').textContent=`1–${list.length} dari 1.240 pengguna`;
+    if(!list.length){
+      tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:3rem;color:var(--gray);">📭 Tidak ada pengguna ditemukan</td></tr>`;
+      return;
+    }
+    tbody.innerHTML=list.map(u=>`
+      <tr id="row-${u.id}">
+        <td><input type="checkbox" class="cb row-cb" data-id="${u.id}" onchange="toggleRow(${u.id})"></td>
+        <td>
+          <div class="user-wrap">
+            <div class="user-avatar" style="background:${u.color};">${u.avatar}</div>
+            <div>
+              <div class="user-name">${u.name}</div>
+              <div class="user-email">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td>${roleBadge(u.role)}</td>
+        <td style="font-weight:500;">${u.orders}</td>
+        <td style="font-size:.82rem;font-weight:500;color:var(--forest);">${fmt(u.spend)}</td>
+        <td style="font-size:.8rem;color:var(--charcoal-lt);">${u.joined}</td>
+        <td>${activityDots(u.lastLogin)}<div style="font-size:.7rem;color:var(--gray);margin-top:.2rem;">${u.lastLogin}</div></td>
+        <td>${statusBadge(u.status)}</td>
+        <td>
+          <div class="tbl-actions">
+            <button class="tbl-btn tbl-edit" onclick="openDetail(${u.id})">👁 Detail</button>
+            ${u.status==='Ditangguhkan'
+              ? `<button class="tbl-btn tbl-activate" onclick="quickActivate(${u.id})">✓ Aktifkan</button>`
+              : `<button class="tbl-btn tbl-suspend" onclick="quickSuspend(${u.id})">⚠ Tangguhkan</button>`
+            }
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function applyFilter(){
+    const q   = document.getElementById('searchInput').value.trim().toLowerCase();
+    const role= document.getElementById('filterRole').value;
+    const sts = document.getElementById('filterStatus').value;
+    const filtered=users.filter(u=>{
+      const matchQ = !q || u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q)||u.city.toLowerCase().includes(q);
+      const matchR = !role||u.role===role;
+      const matchS = !sts||u.status===sts;
+      return matchQ&&matchR&&matchS;
+    });
+    renderTable(filtered);
+  }
+  document.getElementById('searchInput').addEventListener('input',applyFilter);
+  document.getElementById('filterRole').addEventListener('change',applyFilter);
+  document.getElementById('filterStatus').addEventListener('change',applyFilter);
+
+  function toggleSelectAll(){
+    const checked=document.getElementById('selectAll').checked;
+    document.querySelectorAll('.row-cb').forEach(cb=>{
+      cb.checked=checked;
+      const id=parseInt(cb.dataset.id);
+      checked?selectedIds.add(id):selectedIds.delete(id);
+    });
+    updateBulkUI();
+  }
+  function toggleRow(id){
+    const cb=document.querySelector(`.row-cb[data-id="${id}"]`);
+    cb.checked?selectedIds.add(id):selectedIds.delete(id);
+    updateBulkUI();
+  }
+  function updateBulkUI(){
+    const n=selectedIds.size;
+    document.getElementById('selectedCount').textContent=n>0?`${n} dipilih`:'';
+    document.getElementById('bulkBtn').style.display=n>0?'flex':'none';
+  }
+  function bulkAction(){
+    showToast(`Aksi massal diterapkan ke ${selectedIds.size} pengguna`);
+    selectedIds.clear();updateBulkUI();
+    document.getElementById('selectAll').checked=false;
+  }
+
+  function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+  function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id);}));
+
+  function openDetail(id){
+    const u=users.find(x=>x.id===id);
+    if(!u)return;
+    activeUserId=id;
+    document.getElementById('detailAvatar').textContent=u.avatar;
+    document.getElementById('detailAvatar').style.background=u.color;
+    document.getElementById('detailName').textContent=u.name;
+    document.getElementById('detailEmail').textContent=u.email;
+    document.getElementById('detailBadge').innerHTML=roleBadge(u.role)+' '+statusBadge(u.status);
+    document.getElementById('detailRole').textContent=u.role;
+    document.getElementById('detailStatus').innerHTML=statusBadge(u.status);
+    document.getElementById('detailJoined').textContent=u.joined;
+    document.getElementById('detailLastLogin').textContent=u.lastLogin;
+    document.getElementById('detailOrders').textContent=u.orders+' pesanan';
+    document.getElementById('detailSpend').textContent=fmt(u.spend);
+    document.getElementById('detailCity').textContent=u.city;
+    const suspBtn=document.getElementById('detailSuspendBtn');
+    if(u.status==='Ditangguhkan'){
+      suspBtn.textContent='✓ Aktifkan';
+      suspBtn.style.background='#0F7A57';
+      suspBtn.style.borderColor='#0F7A57';
+    } else {
+      suspBtn.textContent='⚠ Tangguhkan';
+      suspBtn.style.background=var_amber_dark;
+      suspBtn.style.borderColor=var_amber_dark;
+    }
+    openModal('detailModal');
+  }
+  const var_amber_dark='#EF9F27';
+
+  function handleSuspend(){
+    const u=users.find(x=>x.id===activeUserId);
+    if(!u)return;
+    closeModal('detailModal');
+    if(u.status==='Ditangguhkan'){
+      u.status='Aktif';
+      showToast(`${u.name} berhasil diaktifkan ✅`);
+    } else {
+      u.status='Ditangguhkan';
+      showToast(`${u.name} berhasil ditangguhkan ⚠️`,'warn');
+    }
+    applyFilter();
+  }
+
+  function quickSuspend(id){
+    const u=users.find(x=>x.id===id);
+    if(!u)return;
+    u.status='Ditangguhkan';
+    showToast(`${u.name} ditangguhkan ⚠️`,'warn');
+    applyFilter();
+  }
+  function quickActivate(id){
+    const u=users.find(x=>x.id===id);
+    if(!u)return;
+    u.status='Aktif';
+    showToast(`${u.name} berhasil diaktifkan ✅`);
+    applyFilter();
+  }
+
+  function handleEdit(){
+    closeModal('detailModal');
+    openModal('addUserModal');
+    document.getElementById('addModalTitle').textContent='Edit Pengguna';
+  }
+
+  function saveUser(){
+    const name=document.getElementById('uFirstName').value.trim();
+    if(!name){showToast('Nama wajib diisi!','error');return;}
+    closeModal('addUserModal');
+    showToast(`Pengguna "${name}" berhasil disimpan ✅`);
+    document.getElementById('uFirstName').value='';
+  }
+
+  document.querySelectorAll('.pg-btn:not(.disabled)').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(['←','→'].includes(btn.textContent.trim()))return;
+      document.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // CURSOR
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function anim(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.querySelectorAll('a,button,input,select').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
+  });
+
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  function toggleSidebar(){document.getElementById('sidebar').classList.toggle('mobile-open');}
+  if(window.innerWidth<=1024) document.getElementById('sidebarToggle').style.display='flex';
+
+  function showToast(msg,type='success'){
+    const tw=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className=`toast${type==='error'?' error':type==='warn'?' warn':''}`;
+    const icon=type==='error'?'❌':type==='warn'?'⚠️':'✅';
+    t.innerHTML=`<span>${icon}</span><span>${msg}</span>`;
+    tw.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3500);
+  }
+
+  renderTable(users);
+</script>
+</body>
+</html>

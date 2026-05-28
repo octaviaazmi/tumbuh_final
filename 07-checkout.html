@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembayaran — Tumbuh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest:#1C3A2F;--forest-light:#2A5242;--mint:#5DCAA5;--mint-light:#9FE1CB;--mint-pale:#D4F4EA;
+      --sage:#E1F5EE;--amber:#FAC775;--amber-dark:#EF9F27;--offwhite:#F5F2EC;--white:#FFFFFF;
+      --charcoal:#2C2C2A;--charcoal-lt:#444441;--gray:#B4B2A9;--gray-lt:#D8D6CE;
+      --border:rgba(28,58,47,0.08);--border-md:rgba(28,58,47,0.14);
+      --shadow-sm:0 2px 8px rgba(28,58,47,.07);--shadow-md:0 8px 24px rgba(28,58,47,.10);--shadow-lg:0 20px 48px rgba(28,58,47,.14);
+      --font-d:'Playfair Display',serif;--font-b:'DM Sans',sans-serif;--nav-h:72px;
+      --r-sm:8px;--r-md:12px;--r-lg:20px;--r-xl:28px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font-b);background:var(--offwhite);color:var(--charcoal);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}
+    button{cursor:pointer;font-family:var(--font-b);border:none;background:none;}
+    input,select,textarea{font-family:var(--font-b);}
+
+    .cursor{width:12px;height:12px;background:var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;}
+
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 4rem;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;transition:all .35s;}
+    .navbar.scrolled{background:rgba(245,242,236,.94);backdrop-filter:blur(18px);box-shadow:0 1px 0 var(--border);}
+    .nav-logo{font-family:var(--font-d);font-size:1.6rem;font-weight:700;color:var(--forest);letter-spacing:-.02em;}
+    .nav-logo .dot{color:var(--mint);}
+    .nav-links{display:flex;align-items:center;gap:2.25rem;}
+    .nav-links a{font-size:.875rem;color:var(--charcoal-lt);position:relative;transition:color .2s;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--mint);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+    .nav-links a:hover{color:var(--forest);}
+    .nav-links a:hover::after{transform:scaleX(1);}
+    .nav-actions{display:flex;align-items:center;gap:1rem;}
+    .nav-cart{position:relative;width:38px;height:38px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;}
+    .nav-cart:hover{background:var(--mint-pale);}
+    .nav-cart-count{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--amber-dark);color:var(--white);font-size:.6rem;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .nav-btn{padding:.55rem 1.3rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.85rem;font-weight:500;transition:all .2s;}
+    .nav-btn:hover{background:var(--forest-light);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .3s;}
+    .mobile-nav{display:none;position:fixed;inset:0;background:var(--forest);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:1.75rem;}
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:var(--font-d);font-size:2.2rem;font-weight:700;color:rgba(255,255,255,.85);opacity:0;transform:translateY(20px);animation:fadeUp .45s ease forwards;}
+    .mobile-nav a:nth-child(2){animation-delay:.05s}.mobile-nav a:nth-child(3){animation-delay:.12s}.mobile-nav a:nth-child(4){animation-delay:.19s}.mobile-nav a:nth-child(5){animation-delay:.26s}.mobile-nav a:nth-child(6){animation-delay:.33s}
+    .mobile-nav a:hover{color:var(--mint);}
+    .mobile-close{position:absolute;top:1.25rem;right:1.5rem;color:var(--white);font-size:1.8rem;opacity:.7;}
+
+    /* PAGE HEADER */
+    .page-header{background:var(--forest);padding:calc(var(--nav-h)+3.5rem) 4rem 4.5rem;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,var(--forest-light),var(--forest) 65%);}
+    .ph-decor{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-size:16rem;opacity:.05;pointer-events:none;user-select:none;}
+    .ph-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto;}
+    .breadcrumb{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:1.25rem;}
+    .breadcrumb a{color:rgba(255,255,255,.55);transition:color .2s;}
+    .breadcrumb a:hover{color:var(--mint-light);}
+    .breadcrumb span{color:rgba(255,255,255,.25);}
+    .page-header h1{font-family:var(--font-d);font-size:clamp(2rem,4vw,3.2rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:-.03em;}
+    .page-header h1 em{font-style:italic;color:var(--mint);}
+
+    /* STEPS */
+    .steps-bar{background:var(--white);border-bottom:1px solid var(--border);}
+    .steps-inner{max-width:1280px;margin:0 auto;padding:.85rem 4rem;display:flex;align-items:center;}
+    .step{display:flex;align-items:center;gap:.5rem;font-size:.82rem;padding:.3rem .85rem;border-radius:var(--r-full);}
+    .step.active{background:var(--sage);color:var(--forest);font-weight:600;}
+    .step.done{color:var(--mint);font-weight:500;}
+    .step.upcoming{color:var(--gray);}
+    .step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+    .step.active .step-num{background:var(--forest);color:var(--white);}
+    .step.done .step-num{background:var(--mint);color:var(--white);}
+    .step.upcoming .step-num{background:var(--gray-lt);color:var(--gray);}
+    .step-line{flex:1;height:1.5px;margin:0 .5rem;max-width:60px;}
+    .step-line.done{background:var(--mint);}
+    .step-line.upcoming{background:var(--gray-lt);}
+
+    /* MAIN */
+    .main{max-width:1280px;margin:0 auto;padding:3.5rem 4rem 6rem;}
+    .checkout-layout{display:grid;grid-template-columns:1fr 380px;gap:3rem;align-items:start;}
+
+    /* FORM SECTIONS */
+    .form-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;margin-bottom:1.5rem;}
+    .section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;}
+    .section-icon{width:38px;height:38px;border-radius:var(--r-md);background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .section-title{font-family:var(--font-d);font-size:1.05rem;font-weight:700;color:var(--forest);}
+    .section-subtitle{font-size:.78rem;color:var(--gray);}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .form-grid.full{grid-template-columns:1fr;}
+    .form-group{display:flex;flex-direction:column;gap:.4rem;}
+    .form-group.span2{grid-column:1/-1;}
+    .form-label{font-size:.8rem;font-weight:500;color:var(--charcoal);}
+    .form-label span{color:#C0392B;}
+    .form-input,.form-select,.form-textarea{padding:.75rem 1rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-md);font-family:var(--font-b);font-size:.875rem;color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;width:100%;background:var(--white);}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(93,202,165,.15);}
+    .form-input::placeholder,.form-textarea::placeholder{color:var(--gray);}
+    .form-textarea{resize:vertical;min-height:90px;}
+    .form-hint{font-size:.72rem;color:var(--gray);margin-top:.2rem;}
+
+    /* SAVED ADDRESS */
+    .saved-addresses{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.25rem;}
+    .saved-addr{display:flex;align-items:flex-start;gap:.85rem;padding:1rem 1.1rem;border:1.5px solid var(--border-md);border-radius:var(--r-lg);cursor:pointer;transition:all .2s;}
+    .saved-addr:hover{border-color:var(--mint);}
+    .saved-addr.active{border-color:var(--forest);background:var(--sage);}
+    .addr-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--gray-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.15rem;transition:all .2s;}
+    .saved-addr.active .addr-radio{border-color:var(--forest);background:var(--forest);}
+    .addr-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--white);display:none;}
+    .saved-addr.active .addr-radio::after{display:block;}
+    .addr-label{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-bottom:.25rem;}
+    .addr-name{font-size:.875rem;font-weight:500;color:var(--forest);}
+    .addr-detail{font-size:.8rem;color:var(--charcoal-lt);margin-top:.15rem;line-height:1.5;}
+    .btn-new-addr{width:100%;padding:.75rem;border:1.5px dashed var(--border-md);border-radius:var(--r-lg);font-size:.83rem;color:var(--charcoal-lt);cursor:pointer;background:none;display:flex;align-items:center;justify-content:center;gap:.4rem;transition:all .2s;}
+    .btn-new-addr:hover{border-color:var(--mint);color:var(--forest);}
+
+    /* SHIPPING OPTIONS */
+    .shipping-opts{display:flex;flex-direction:column;gap:.65rem;}
+    .ship-opt{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border:1.5px solid var(--border-md);border-radius:var(--r-lg);cursor:pointer;transition:all .2s;}
+    .ship-opt:hover{border-color:var(--mint);}
+    .ship-opt.active{border-color:var(--forest);background:var(--sage);}
+    .ship-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--gray-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+    .ship-opt.active .ship-radio{border-color:var(--forest);background:var(--forest);}
+    .ship-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--white);display:none;}
+    .ship-opt.active .ship-radio::after{display:block;}
+    .ship-icon{font-size:1.4rem;flex-shrink:0;}
+    .ship-info{flex:1;}
+    .ship-name{font-size:.875rem;font-weight:500;color:var(--forest);}
+    .ship-est{font-size:.75rem;color:var(--gray);margin-top:.1rem;}
+    .ship-price{font-size:.9rem;font-weight:600;color:var(--forest);}
+    .ship-badge{font-size:.65rem;font-weight:600;padding:.2rem .55rem;border-radius:var(--r-full);background:var(--mint-pale);color:var(--forest);margin-top:.2rem;display:inline-block;}
+
+    /* PAYMENT OPTIONS */
+    .pay-groups{display:flex;flex-direction:column;gap:1.25rem;}
+    .pay-group-title{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:.65rem;}
+    .pay-opts{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+    .pay-opt{display:flex;align-items:center;gap:.7rem;padding:.85rem 1rem;border:1.5px solid var(--border-md);border-radius:var(--r-lg);cursor:pointer;transition:all .2s;font-size:.85rem;color:var(--charcoal-lt);font-weight:400;}
+    .pay-opt:hover{border-color:var(--mint);}
+    .pay-opt.active{border-color:var(--forest);background:var(--sage);color:var(--forest);font-weight:500;}
+    .pay-opt-icon{font-size:1.25rem;flex-shrink:0;}
+    .pay-opt-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--gray-lt);margin-left:auto;flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+    .pay-opt.active .pay-opt-radio{border-color:var(--forest);background:var(--forest);}
+    .pay-opt.active .pay-opt-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--white);}
+
+    /* CREDIT CARD FIELDS */
+    .card-fields{background:var(--offwhite);border-radius:var(--r-lg);padding:1.25rem;margin-top:1rem;display:none;}
+    .card-fields.show{display:block;}
+    .card-num-wrap{position:relative;}
+    .card-icon{position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:1.1rem;}
+
+    /* ORDER SUMMARY */
+    .summary-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.75rem;position:sticky;top:calc(var(--nav-h)+1.5rem);}
+    .summary-title{font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--forest);margin-bottom:1.25rem;}
+    .order-items{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.25rem;}
+    .order-item{display:flex;align-items:center;gap:.85rem;padding:.65rem .85rem;background:var(--offwhite);border-radius:var(--r-md);}
+    .oi-thumb{width:40px;height:40px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+    .oi-name{font-size:.82rem;font-weight:500;color:var(--forest);flex:1;}
+    .oi-qty{font-size:.72rem;color:var(--gray);}
+    .oi-price{font-size:.82rem;font-weight:500;}
+    .summary-row{display:flex;align-items:center;justify-content:space-between;font-size:.875rem;padding:.45rem 0;}
+    .summary-label{color:var(--charcoal-lt);}
+    .summary-val{font-weight:500;color:var(--charcoal);}
+    .summary-val.green{color:var(--mint);}
+    .summary-divider{height:1px;background:var(--border);margin:.6rem 0;}
+    .summary-total-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0 0;}
+    .summary-total-label{font-size:1rem;font-weight:600;color:var(--charcoal);}
+    .summary-total-val{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--forest);}
+    .btn-pay{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:1.05rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.95rem;font-weight:500;cursor:pointer;border:none;transition:all .3s;margin-top:1.25rem;position:relative;overflow:hidden;}
+    .btn-pay::before{content:'';position:absolute;inset:0;background:var(--mint);transform:translateX(-102%);transition:transform .4s;z-index:0;}
+    .btn-pay:hover::before{transform:translateX(0);}
+    .btn-pay:hover{color:var(--forest);transform:translateY(-1px);box-shadow:var(--shadow-md);}
+    .btn-pay span{position:relative;z-index:1;}
+    .btn-back{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.75rem;background:transparent;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);font-size:.85rem;color:var(--charcoal-lt);cursor:pointer;transition:all .2s;margin-top:.6rem;}
+    .btn-back:hover{border-color:var(--forest);color:var(--forest);}
+    .security-row{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.25rem;font-size:.75rem;color:var(--gray);}
+
+    /* SUCCESS MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(28,58,47,.6);backdrop-filter:blur(6px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .modal-overlay.open{opacity:1;pointer-events:auto;}
+    .modal{background:var(--white);border-radius:var(--r-xl);max-width:460px;width:100%;padding:3rem 2.5rem;text-align:center;box-shadow:var(--shadow-xl);transform:translateY(24px) scale(.97);transition:transform .35s;}
+    .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+    .modal-icon{font-size:5rem;margin-bottom:1.25rem;animation:bounceIn .6s .2s both;}
+    .modal-title{font-family:var(--font-d);font-size:1.6rem;font-weight:800;color:var(--forest);margin-bottom:.75rem;}
+    .modal-sub{font-size:.9rem;color:var(--charcoal-lt);line-height:1.7;margin-bottom:.6rem;}
+    .modal-order{font-size:.82rem;font-weight:600;color:var(--mint);letter-spacing:.06em;margin-bottom:2rem;}
+    .modal-btns{display:flex;flex-direction:column;gap:.6rem;}
+    .btn-modal-primary{padding:.9rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.9rem;font-weight:500;cursor:pointer;border:none;transition:all .2s;}
+    .btn-modal-primary:hover{background:var(--forest-light);}
+    .btn-modal-secondary{padding:.9rem;background:var(--sage);color:var(--forest);border-radius:var(--r-full);font-size:.9rem;font-weight:500;cursor:pointer;border:none;transition:all .2s;}
+    .btn-modal-secondary:hover{background:var(--mint-pale);}
+
+    /* FOOTER */
+    footer{background:var(--charcoal);color:var(--white);padding:5rem 4rem 2rem;}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:4rem;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:2rem;max-width:1280px;margin-left:auto;margin-right:auto;}
+    .f-logo{font-family:var(--font-d);font-size:1.9rem;font-weight:700;color:var(--white);margin-bottom:.85rem;}
+    .f-logo .dot{color:var(--mint);}
+    .f-desc{font-size:.875rem;color:rgba(255,255,255,.38);line-height:1.75;margin-bottom:1.5rem;}
+    .f-socials{display:flex;gap:.6rem;}
+    .f-social{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:rgba(255,255,255,.55);transition:all .2s;}
+    .f-social:hover{border-color:var(--mint);background:rgba(93,202,165,.1);color:var(--mint);}
+    .f-col-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1.1rem;}
+    .f-links{display:flex;flex-direction:column;gap:.7rem;}
+    .f-links a{font-size:.875rem;color:rgba(255,255,255,.55);transition:color .2s;}
+    .f-links a:hover{color:var(--mint);}
+    .f-bottom{display:flex;justify-content:space-between;align-items:center;max-width:1280px;margin:0 auto;}
+    .f-copy{font-size:.78rem;color:rgba(255,255,255,.22);}
+
+    .scroll-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--forest);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;z-index:500;opacity:0;pointer-events:none;transition:all .3s;box-shadow:var(--shadow-md);}
+    .scroll-top.visible{opacity:1;pointer-events:auto;}
+    .scroll-top:hover{background:var(--forest-light);transform:translateY(-2px);}
+    .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem;}
+    .toast{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.1rem;background:var(--charcoal);color:var(--white);border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease;border-left:3px solid var(--mint);min-width:240px;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes bounceIn{0%{transform:scale(0);}60%{transform:scale(1.15);}100%{transform:scale(1);}}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}
+
+    @media(max-width:1100px){
+      .checkout-layout{grid-template-columns:1fr;}
+      .summary-card{position:static;}
+      .navbar{padding:0 2rem;}.page-header{padding:calc(var(--nav-h)+2.5rem) 2rem 3.5rem;}
+      .steps-inner{padding:.85rem 2rem;}.main{padding:3rem 2rem 5rem;}
+      footer{padding:4rem 2rem 1.5rem;}.footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem;}
+    }
+    @media(max-width:768px){
+      .navbar{padding:0 1.25rem;}.nav-links,.nav-btn{display:none;}.hamburger{display:flex;}
+      .page-header{padding:calc(var(--nav-h)+2rem) 1.25rem 3rem;}.steps-inner{padding:.75rem 1.25rem;overflow-x:auto;}
+      .main{padding:2.5rem 1.25rem 5rem;}.form-grid{grid-template-columns:1fr;}
+      .form-group.span2{grid-column:auto;}.pay-opts{grid-template-columns:1fr;}
+      footer{padding:3rem 1.25rem 1.25rem;}.footer-grid{grid-template-columns:1fr;gap:2rem;}
+      .f-bottom{flex-direction:column;gap:.5rem;text-align:center;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="index.html">Beranda</a><a href="04-catalog.html">Katalog</a>
+  <a href="02-articles.html">Artikel</a><a href="06-cart.html">Keranjang</a><a href="#">Akun</a>
+</div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">Tumbuh<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="04-catalog.html">Katalog</a></li>
+    <li><a href="02-articles.html">Artikel</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="06-cart.html" class="nav-cart">🛒<span class="nav-cart-count">4</span></a>
+    <a href="#" class="nav-btn">Masuk</a>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="ph-decor">💳</div>
+  <div class="ph-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Beranda</a><span>›</span>
+      <a href="06-cart.html">Keranjang</a><span>›</span>
+      <span style="color:rgba(255,255,255,.65);">Pembayaran</span>
+    </div>
+    <h1><em>Pembayaran</em></h1>
+  </div>
+</header>
+
+<!-- STEPS -->
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step done"><span class="step-num">✓</span>Keranjang</div>
+    <div class="step-line done"></div>
+    <div class="step active"><span class="step-num">2</span>Pembayaran</div>
+    <div class="step-line upcoming"></div>
+    <div class="step upcoming"><span class="step-num">3</span>Konfirmasi</div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="checkout-layout">
+
+    <!-- LEFT FORM -->
+    <div>
+
+      <!-- ALAMAT -->
+      <div class="form-section reveal">
+        <div class="section-header">
+          <div class="section-icon">📍</div>
+          <div>
+            <div class="section-title">Alamat Pengiriman</div>
+            <div class="section-subtitle">Pilih atau tambahkan alamat pengiriman</div>
+          </div>
+        </div>
+
+        <div class="saved-addresses">
+          <div class="saved-addr active" onclick="selectAddr(this)">
+            <div class="addr-radio"></div>
+            <div>
+              <div class="addr-label">Rumah · Utama</div>
+              <div class="addr-name">Andy Pratama · 082134567890</div>
+              <div class="addr-detail">Jl. Raya Gubeng No. 18, Surabaya, Jawa Timur, 60281</div>
+            </div>
+          </div>
+          <div class="saved-addr" onclick="selectAddr(this)">
+            <div class="addr-radio"></div>
+            <div>
+              <div class="addr-label">Kantor</div>
+              <div class="addr-name">Andy Pratama · 082134567890</div>
+              <div class="addr-detail">Jl. Basuki Rahmat No. 25, Surabaya, Jawa Timur, 60271</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-new-addr" onclick="toggleNewAddr()">＋ Tambah Alamat Baru</button>
+
+        <!-- New address form (hidden by default) -->
+        <div id="newAddrForm" style="display:none;margin-top:1.25rem;">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Nama Penerima <span>*</span></label><input type="text" class="form-input" placeholder="Nama lengkap"></div>
+            <div class="form-group"><label class="form-label">Nomor Telepon <span>*</span></label><input type="text" class="form-input" placeholder="+62..."></div>
+            <div class="form-group span2"><label class="form-label">Alamat Lengkap <span>*</span></label><input type="text" class="form-input" placeholder="Jl. nama jalan, nomor rumah, RT/RW..."></div>
+            <div class="form-group"><label class="form-label">Kota / Kabupaten <span>*</span></label><input type="text" class="form-input" placeholder="Kota"></div>
+            <div class="form-group"><label class="form-label">Kode Pos <span>*</span></label><input type="text" class="form-input" placeholder="00000"></div>
+            <div class="form-group"><label class="form-label">Provinsi <span>*</span></label>
+              <select class="form-select"><option>Jawa Timur</option><option>DKI Jakarta</option><option>Jawa Barat</option><option>Jawa Tengah</option><option>Bali</option><option>Sumatera Utara</option></select>
+            </div>
+            <div class="form-group"><label class="form-label">Label Alamat</label><input type="text" class="form-input" placeholder="Rumah / Kantor / Kos"></div>
+            <div class="form-group span2"><label class="form-label">Catatan untuk Kurir</label><textarea class="form-textarea" placeholder="Contoh: Masuk gang, rumah cat hijau..."></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENGIRIMAN -->
+      <div class="form-section reveal">
+        <div class="section-header">
+          <div class="section-icon">🚚</div>
+          <div>
+            <div class="section-title">Metode Pengiriman</div>
+            <div class="section-subtitle">Pilih kurir dan layanan pengiriman</div>
+          </div>
+        </div>
+        <div class="shipping-opts">
+          <div class="ship-opt" id="ship-1" onclick="selectShip(this,25000,'Rp 25.000')">
+            <div class="ship-radio"></div>
+            <div class="ship-icon">📦</div>
+            <div class="ship-info">
+              <div class="ship-name">JNE Reguler (REG)</div>
+              <div class="ship-est">Estimasi 3–5 hari kerja</div>
+            </div>
+            <div style="text-align:right;"><div class="ship-price">Rp 25.000</div></div>
+          </div>
+          <div class="ship-opt active" id="ship-2" onclick="selectShip(this,35000,'Rp 35.000')">
+            <div class="ship-radio"></div>
+            <div class="ship-icon">⚡</div>
+            <div class="ship-info">
+              <div class="ship-name">SiCepat Reguler</div>
+              <div class="ship-est">Estimasi 2–3 hari kerja</div>
+              <span class="ship-badge">Rekomendasi</span>
+            </div>
+            <div style="text-align:right;"><div class="ship-price">Rp 35.000</div></div>
+          </div>
+          <div class="ship-opt" id="ship-3" onclick="selectShip(this,55000,'Rp 55.000')">
+            <div class="ship-radio"></div>
+            <div class="ship-icon">🚀</div>
+            <div class="ship-info">
+              <div class="ship-name">JNE YES (1 Hari)</div>
+              <div class="ship-est">Estimasi 1 hari kerja · Garansi tepat waktu</div>
+            </div>
+            <div style="text-align:right;"><div class="ship-price">Rp 55.000</div></div>
+          </div>
+          <div class="ship-opt" id="ship-4" onclick="selectShip(this,0,'GRATIS')">
+            <div class="ship-radio"></div>
+            <div class="ship-icon">🌿</div>
+            <div class="ship-info">
+              <div class="ship-name">Gratis Ongkir (min. Rp 300.000)</div>
+              <div class="ship-est">JNE Reguler · 3–5 hari kerja</div>
+              <span class="ship-badge" style="background:var(--amber-pale);color:#7A4F00;">Syarat berlaku</span>
+            </div>
+            <div style="text-align:right;"><div class="ship-price" style="color:var(--mint);">GRATIS</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PEMBAYARAN -->
+      <div class="form-section reveal">
+        <div class="section-header">
+          <div class="section-icon">💳</div>
+          <div>
+            <div class="section-title">Metode Pembayaran</div>
+            <div class="section-subtitle">Pilih metode yang paling nyaman untukmu</div>
+          </div>
+        </div>
+        <div class="pay-groups">
+          <div>
+            <div class="pay-group-title">Dompet Digital</div>
+            <div class="pay-opts">
+              <div class="pay-opt" onclick="selectPay(this,'gopay')"><span class="pay-opt-icon">💚</span>GoPay<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'ovo')"><span class="pay-opt-icon">🔵</span>OVO<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'dana')"><span class="pay-opt-icon">🟢</span>DANA<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'shopeepay')"><span class="pay-opt-icon">🟠</span>ShopeePay<span class="pay-opt-radio"></span></div>
+            </div>
+          </div>
+          <div>
+            <div class="pay-group-title">Transfer Bank</div>
+            <div class="pay-opts">
+              <div class="pay-opt active" onclick="selectPay(this,'bca')"><span class="pay-opt-icon">🏦</span>BCA<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'bni')"><span class="pay-opt-icon">🏦</span>BNI<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'mandiri')"><span class="pay-opt-icon">🏦</span>Mandiri<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'bri')"><span class="pay-opt-icon">🏦</span>BRI<span class="pay-opt-radio"></span></div>
+            </div>
+          </div>
+          <div>
+            <div class="pay-group-title">Lainnya</div>
+            <div class="pay-opts">
+              <div class="pay-opt" onclick="selectPay(this,'cc')"><span class="pay-opt-icon">💳</span>Kartu Kredit / Debit<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'alfamart')"><span class="pay-opt-icon">🏪</span>Alfamart / Indomaret<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'cod')"><span class="pay-opt-icon">💵</span>Bayar di Tempat (COD)<span class="pay-opt-radio"></span></div>
+              <div class="pay-opt" onclick="selectPay(this,'qris')"><span class="pay-opt-icon">📱</span>QRIS<span class="pay-opt-radio"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Credit card fields -->
+        <div class="card-fields" id="cardFields">
+          <div class="form-grid" style="gap:.85rem;">
+            <div class="form-group span2">
+              <label class="form-label">Nomor Kartu</label>
+              <div class="card-num-wrap">
+                <input type="text" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19" id="cardNum" oninput="formatCard(this)">
+                <span class="card-icon" id="cardIcon">💳</span>
+              </div>
+            </div>
+            <div class="form-group span2"><label class="form-label">Nama Pemegang Kartu</label><input type="text" class="form-input" placeholder="Sesuai kartu"></div>
+            <div class="form-group"><label class="form-label">Masa Berlaku</label><input type="text" class="form-input" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)"></div>
+            <div class="form-group"><label class="form-label">CVV/CVC</label><input type="text" class="form-input" placeholder="•••" maxlength="3"><div class="form-hint">3 digit di belakang kartu</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATATAN ORDER -->
+      <div class="form-section reveal">
+        <div class="section-header">
+          <div class="section-icon">📝</div>
+          <div><div class="section-title">Catatan Pesanan</div><div class="section-subtitle">Opsional</div></div>
+        </div>
+        <textarea class="form-textarea" placeholder="Instruksi khusus untuk pesananmu, misalnya: tanaman untuk kado, mohon dikemas lebih rapi..." style="width:100%;"></textarea>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: ORDER SUMMARY -->
+    <div class="summary-card reveal reveal-d1">
+      <div class="summary-title">Ringkasan Pesanan</div>
+
+      <div class="order-items">
+        <div class="order-item">
+          <div class="oi-thumb" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);">🪴</div>
+          <div class="oi-name">Monstera Deliciosa<br><span class="oi-qty">Medium · 1x</span></div>
+          <span class="oi-price">Rp 185.000</span>
+        </div>
+        <div class="order-item">
+          <div class="oi-thumb" style="background:linear-gradient(135deg,#E1F5EE,#5DCAA5);">🌿</div>
+          <div class="oi-name">Pothos Golden<br><span class="oi-qty">Mini · 2x</span></div>
+          <span class="oi-price">Rp 144.000</span>
+        </div>
+        <div class="order-item">
+          <div class="oi-thumb" style="background:linear-gradient(135deg,#FDF3E0,#FAC775);">🌵</div>
+          <div class="oi-name">Kaktus Saguaro Mini<br><span class="oi-qty">Mini · 1x</span></div>
+          <span class="oi-price">Rp 55.000</span>
+        </div>
+      </div>
+
+      <div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-val">Rp 384.000</span></div>
+      <div class="summary-row"><span class="summary-label">Ongkos Kirim</span><span class="summary-val" id="shipDisplay">Rp 35.000</span></div>
+      <div class="summary-row"><span class="summary-label">Diskon</span><span class="summary-val green">- Rp 0</span></div>
+      <div class="summary-divider"></div>
+      <div class="summary-total-row">
+        <span class="summary-total-label">Total Bayar</span>
+        <span class="summary-total-val" id="totalDisplay">Rp 419.000</span>
+      </div>
+
+      <button class="btn-pay" onclick="placeOrder()"><span>🔒 Bayar Sekarang</span></button>
+      <a href="06-cart.html"><button class="btn-back">← Kembali ke Keranjang</button></a>
+      <div class="security-row">🔒 SSL Encrypted · Transaksi Aman</div>
+    </div>
+
+  </div>
+</main>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-icon">🎉</div>
+    <div class="modal-title">Pesanan Berhasil!</div>
+    <p class="modal-sub">Terima kasih sudah belanja di Tumbuh. Pesananmu sedang diproses dan akan segera dikirim.</p>
+    <div class="modal-order">ID Pesanan: #TBH-20260517-084</div>
+    <div class="modal-btns">
+      <button class="btn-modal-primary" onclick="window.location.href='08-history.html'">Lihat Status Pesanan →</button>
+      <button class="btn-modal-secondary" onclick="window.location.href='01-landing.html'">Kembali ke Beranda 🌿</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo">Tumbuh<span class="dot">.</span></div>
+      <p class="f-desc">Menghadirkan keindahan alam ke dalam ruang hidupmu. Tanaman hias pilihan, dikirim dengan cinta ke seluruh Indonesia.</p>
+      <div class="f-socials"><a class="f-social" href="#">📷</a><a class="f-social" href="#">🐦</a><a class="f-social" href="#">💼</a><a class="f-social" href="#">▶️</a></div>
+    </div>
+    <div><div class="f-col-title">Belanja</div><ul class="f-links"><li><a href="04-catalog.html">Katalog</a></li><li><a href="06-cart.html">Keranjang</a></li></ul></div>
+    <div><div class="f-col-title">Akun</div><ul class="f-links"><li><a href="08-history.html">Riwayat Transaksi</a></li></ul></div>
+    <div><div class="f-col-title">Bantuan</div><ul class="f-links"><li><a href="#">FAQ</a></li><li><a href="#">Pengiriman</a></li><li><a href="#">Pengembalian</a></li></ul></div>
+  </div>
+  <div class="f-bottom">
+    <div class="f-copy">© 2026 Tumbuh. Semua hak dilindungi.</div>
+    <div class="f-copy">Dibuat dengan 🌿 di Indonesia</div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop">↑</button>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // CURSOR
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function anim(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.querySelectorAll('a,button,input,select,textarea').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
+  });
+
+  // NAVBAR
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',()=>{
+    navbar.classList.toggle('scrolled',scrollY>60);
+    document.getElementById('scrollTop').classList.toggle('visible',scrollY>400);
+  },{passive:true});
+
+  // MOBILE NAV
+  const mobileNav=document.getElementById('mobileNav');
+  document.getElementById('hamburger').addEventListener('click',()=>{mobileNav.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('mobileClose').addEventListener('click',()=>{mobileNav.classList.remove('open');document.body.style.overflow='';});
+  document.getElementById('scrollTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  // SCROLL REVEAL
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // TOAST
+  function showToast(msg){
+    const tw=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className='toast';t.innerHTML=`<span>✅</span><span>${msg}</span>`;
+    tw.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3000);
+  }
+
+  // ADDRESS SELECT
+  function selectAddr(el){
+    document.querySelectorAll('.saved-addr').forEach(a=>a.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // NEW ADDRESS TOGGLE
+  function toggleNewAddr(){
+    const f=document.getElementById('newAddrForm');
+    f.style.display=f.style.display==='none'?'block':'none';
+  }
+
+  // SHIPPING SELECT
+  let shipCost=35000;
+  function selectShip(el,cost,label){
+    document.querySelectorAll('.ship-opt').forEach(o=>o.classList.remove('active'));
+    el.classList.add('active');
+    shipCost=cost;
+    document.getElementById('shipDisplay').textContent=label;
+    const total=384000+shipCost;
+    document.getElementById('totalDisplay').textContent='Rp '+total.toLocaleString('id-ID');
+  }
+
+  // PAYMENT SELECT
+  let activePayMethod='bca';
+  function selectPay(el,method){
+    document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('active'));
+    el.classList.add('active');
+    activePayMethod=method;
+    // Show card fields only for credit card
+    const cf=document.getElementById('cardFields');
+    cf.classList.toggle('show',method==='cc');
+  }
+
+  // CARD NUMBER FORMAT
+  function formatCard(el){
+    let v=el.value.replace(/\D/g,'').substring(0,16);
+    el.value=v.replace(/(.{4})/g,'$1 ').trim();
+    // Detect card type
+    const icon=document.getElementById('cardIcon');
+    if(v.startsWith('4'))icon.textContent='💳';
+    else if(v.startsWith('5'))icon.textContent='💳';
+    else if(v.startsWith('3'))icon.textContent='💳';
+    else icon.textContent='💳';
+  }
+  function formatExpiry(el){
+    let v=el.value.replace(/\D/g,'');
+    if(v.length>=3)el.value=v.substring(0,2)+'/'+v.substring(2,4);
+    else el.value=v;
+  }
+
+  // PLACE ORDER
+  function placeOrder(){
+    document.getElementById('successModal').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+
+  // CLOSE MODAL on overlay click
+  document.getElementById('successModal').addEventListener('click',function(e){
+    if(e.target===this){ this.classList.remove('open'); document.body.style.overflow=''; }
+  });
+</script>
+</body>
+</html>

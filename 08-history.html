@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riwayat Transaksi — Tumbuh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest:#1C3A2F;--forest-light:#2A5242;--mint:#5DCAA5;--mint-light:#9FE1CB;--mint-pale:#D4F4EA;
+      --sage:#E1F5EE;--amber:#FAC775;--amber-dark:#EF9F27;--amber-pale:#FDF3E0;--offwhite:#F5F2EC;--white:#FFFFFF;
+      --charcoal:#2C2C2A;--charcoal-lt:#444441;--gray:#B4B2A9;--gray-lt:#D8D6CE;
+      --border:rgba(28,58,47,0.08);--border-md:rgba(28,58,47,0.14);
+      --shadow-sm:0 2px 8px rgba(28,58,47,.07);--shadow-md:0 8px 24px rgba(28,58,47,.10);--shadow-lg:0 20px 48px rgba(28,58,47,.14);
+      --font-d:'Playfair Display',serif;--font-b:'DM Sans',sans-serif;--nav-h:72px;
+      --r-sm:8px;--r-md:12px;--r-lg:20px;--r-xl:28px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font-b);background:var(--offwhite);color:var(--charcoal);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}
+    button{cursor:pointer;font-family:var(--font-b);border:none;background:none;}
+
+    .cursor{width:12px;height:12px;background:var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+    .cursor-ring{width:36px;height:36px;border:1.5px solid var(--mint);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;}
+
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 4rem;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;transition:all .35s;}
+    .navbar.scrolled{background:rgba(245,242,236,.94);backdrop-filter:blur(18px);box-shadow:0 1px 0 var(--border);}
+    .nav-logo{font-family:var(--font-d);font-size:1.6rem;font-weight:700;color:var(--forest);letter-spacing:-.02em;}
+    .nav-logo .dot{color:var(--mint);}
+    .nav-links{display:flex;align-items:center;gap:2.25rem;}
+    .nav-links a{font-size:.875rem;color:var(--charcoal-lt);position:relative;transition:color .2s;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--mint);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+    .nav-links a:hover{color:var(--forest);}
+    .nav-links a:hover::after{transform:scaleX(1);}
+    .nav-actions{display:flex;align-items:center;gap:1rem;}
+    .nav-cart{position:relative;width:38px;height:38px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;}
+    .nav-cart:hover{background:var(--mint-pale);}
+    .nav-cart-count{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--amber-dark);color:var(--white);font-size:.6rem;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .nav-btn{padding:.55rem 1.3rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.85rem;font-weight:500;transition:all .2s;}
+    .nav-btn:hover{background:var(--forest-light);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .3s;}
+    .mobile-nav{display:none;position:fixed;inset:0;background:var(--forest);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:1.75rem;}
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:var(--font-d);font-size:2.2rem;font-weight:700;color:rgba(255,255,255,.85);opacity:0;transform:translateY(20px);animation:fadeUp .45s ease forwards;}
+    .mobile-nav a:nth-child(2){animation-delay:.05s}.mobile-nav a:nth-child(3){animation-delay:.12s}.mobile-nav a:nth-child(4){animation-delay:.19s}.mobile-nav a:nth-child(5){animation-delay:.26s}.mobile-nav a:nth-child(6){animation-delay:.33s}
+    .mobile-nav a:hover{color:var(--mint);}
+    .mobile-close{position:absolute;top:1.25rem;right:1.5rem;color:var(--white);font-size:1.8rem;opacity:.7;}
+
+    /* PAGE HEADER */
+    .page-header{background:var(--forest);padding:calc(var(--nav-h)+4rem) 4rem 5rem;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,var(--forest-light),var(--forest) 65%);}
+    .ph-decor{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-size:16rem;opacity:.05;pointer-events:none;user-select:none;}
+    .ph-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto;}
+    .breadcrumb{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:1.25rem;}
+    .breadcrumb a{color:rgba(255,255,255,.55);transition:color .2s;}
+    .breadcrumb a:hover{color:var(--mint-light);}
+    .breadcrumb span{color:rgba(255,255,255,.25);}
+    .section-tag{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mint-light);display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.85rem;}
+    .section-tag::before{content:'';width:22px;height:1.5px;background:var(--mint-light);}
+    .page-header h1{font-family:var(--font-d);font-size:clamp(2rem,4vw,3.2rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:-.03em;}
+    .page-header h1 em{font-style:italic;color:var(--mint);}
+    .page-header p{font-size:1rem;color:rgba(255,255,255,.5);margin-top:.75rem;max-width:480px;}
+
+    /* MAIN */
+    .main{max-width:1280px;margin:0 auto;padding:4rem;}
+
+    /* STAT CARDS */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:3rem;}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;display:flex;align-items:flex-start;gap:1rem;transition:all .25s;}
+    .stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+    .stat-icon{width:46px;height:46px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+    .si-green{background:var(--sage);}
+    .si-amber{background:var(--amber-pale);}
+    .si-blue{background:#E8F4F8;}
+    .si-purple{background:#F5EBF8;}
+    .stat-label{font-size:.75rem;font-weight:500;color:var(--gray);margin-bottom:.3rem;}
+    .stat-val{font-family:var(--font-d);font-size:1.65rem;font-weight:700;color:var(--forest);line-height:1;margin-bottom:.3rem;}
+    .stat-note{font-size:.72rem;color:var(--gray);}
+    .stat-up{color:#0F7A57;font-weight:500;}
+    .stat-down{color:#C0392B;font-weight:500;}
+
+    /* FILTER TABS */
+    .filter-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
+    .tab-nav{display:flex;border-bottom:2px solid var(--border);}
+    .tab-btn{padding:.7rem 1.35rem;background:none;border:none;font-family:var(--font-b);font-size:.875rem;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;}
+    .tab-btn.active,.tab-btn:hover{color:var(--forest);}
+    .tab-btn.active{border-bottom-color:var(--forest);font-weight:500;}
+    .search-wrap{position:relative;}
+    .search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none;}
+    .search-input{padding:.65rem .9rem .65rem 2.5rem;border:1.5px solid var(--gray-lt);border-radius:var(--r-full);background:var(--white);font-family:var(--font-b);font-size:.85rem;color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;width:240px;}
+    .search-input:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(93,202,165,.15);}
+    .search-input::placeholder{color:var(--gray);}
+
+    /* ORDER CARDS */
+    .orders-list{display:flex;flex-direction:column;gap:1.25rem;}
+    .order-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;transition:all .25s;}
+    .order-card:hover{box-shadow:var(--shadow-md);}
+
+    .order-head{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;background:var(--offwhite);border-bottom:1px solid var(--border);}
+    .order-id-wrap{}
+    .order-id{font-size:.875rem;font-weight:600;color:var(--forest);}
+    .order-date{font-size:.75rem;color:var(--gray);margin-top:.15rem;}
+    .badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:.28rem .8rem;border-radius:var(--r-full);}
+    .badge-success{background:#E6F9F2;color:#0F7A57;}
+    .badge-warning{background:var(--amber-pale);color:#966800;}
+    .badge-info{background:#E8F4F8;color:#1A6B8A;}
+    .badge-error{background:#FEECEC;color:#C0392B;}
+    .badge-gray{background:var(--gray-lt);color:var(--charcoal-lt);}
+
+    .order-items-row{display:flex;align-items:center;gap:.85rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);overflow-x:auto;}
+    .order-item-chip{display:flex;align-items:center;gap:.6rem;background:var(--offwhite);border-radius:var(--r-md);padding:.55rem .85rem;flex-shrink:0;}
+    .chip-thumb{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+    .chip-info{}
+    .chip-name{font-size:.8rem;font-weight:500;color:var(--forest);}
+    .chip-variant{font-size:.7rem;color:var(--gray);}
+    .order-more{font-size:.75rem;color:var(--gray);white-space:nowrap;flex-shrink:0;}
+
+    .order-foot{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;flex-wrap:wrap;gap:.75rem;}
+    .order-total-wrap{}
+    .order-total-label{font-size:.72rem;color:var(--gray);margin-bottom:.15rem;}
+    .order-total{font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--forest);}
+    .order-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
+    .btn-action{padding:.45rem 1rem;border-radius:var(--r-full);font-size:.78rem;font-weight:500;cursor:pointer;transition:all .18s;border:1.5px solid;}
+    .btn-action-ghost{border-color:var(--gray-lt);color:var(--charcoal-lt);background:none;}
+    .btn-action-ghost:hover{border-color:var(--forest);color:var(--forest);}
+    .btn-action-primary{border-color:var(--forest);background:var(--forest);color:var(--white);}
+    .btn-action-primary:hover{background:var(--forest-light);}
+    .btn-action-mint{border-color:var(--mint);background:var(--mint-pale);color:var(--forest);}
+    .btn-action-mint:hover{background:var(--mint);color:var(--white);}
+    .btn-action-red{border-color:#FAECEC;background:#FEECEC;color:#C0392B;}
+    .btn-action-red:hover{background:#FDD8D8;}
+
+    /* TRACKING TIMELINE */
+    .tracking-wrap{padding:1.25rem 1.5rem;border-top:1px solid var(--border);display:none;}
+    .tracking-wrap.show{display:block;}
+    .timeline{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding-bottom:.25rem;}
+    .tl-step{display:flex;flex-direction:column;align-items:center;gap:.4rem;flex-shrink:0;min-width:100px;}
+    .tl-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--gray-lt);background:var(--white);flex-shrink:0;transition:all .2s;position:relative;z-index:1;}
+    .tl-step.done .tl-dot{background:var(--mint);border-color:var(--mint);}
+    .tl-step.active .tl-dot{background:var(--forest);border-color:var(--forest);box-shadow:0 0 0 4px rgba(28,58,47,.12);}
+    .tl-line{flex:1;height:2px;background:var(--gray-lt);margin-top:5px;min-width:50px;}
+    .tl-line.done{background:var(--mint);}
+    .tl-label{font-size:.72rem;font-weight:500;color:var(--gray);text-align:center;line-height:1.35;}
+    .tl-step.done .tl-label,.tl-step.active .tl-label{color:var(--forest);}
+    .tl-time{font-size:.65rem;color:var(--gray);text-align:center;}
+    .tl-row{display:flex;align-items:center;width:100%;}
+
+    /* EMPTY STATE */
+    .empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;gap:1rem;}
+    .empty-state.show{display:flex;}
+    .empty-icon{font-size:5rem;opacity:.25;}
+    .empty-state h3{font-family:var(--font-d);font-size:1.3rem;color:var(--charcoal);}
+    .empty-state p{font-size:.9rem;color:var(--gray);}
+
+    /* PAGINATION */
+    .pagination{display:flex;align-items:center;gap:.4rem;justify-content:center;margin-top:3rem;}
+    .pg-btn{width:38px;height:38px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:500;color:var(--charcoal-lt);border:1.5px solid var(--border);background:var(--white);cursor:pointer;transition:all .18s;}
+    .pg-btn:hover{border-color:var(--forest);color:var(--forest);}
+    .pg-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest);}
+    .pg-btn.disabled{opacity:.35;pointer-events:none;}
+
+    /* MODAL: ORDER DETAIL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(28,58,47,.55);backdrop-filter:blur(6px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .modal-overlay.open{opacity:1;pointer-events:auto;}
+    .modal{background:var(--white);border-radius:var(--r-xl);max-width:560px;width:100%;padding:2rem;box-shadow:0 32px 64px rgba(28,58,47,.2);transform:translateY(24px) scale(.97);transition:transform .35s;max-height:90vh;overflow-y:auto;}
+    .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+    .modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;}
+    .modal-title{font-family:var(--font-d);font-size:1.25rem;font-weight:700;color:var(--forest);}
+    .modal-close{width:32px;height:32px;border-radius:50%;background:var(--offwhite);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--gray);cursor:pointer;transition:all .18s;border:none;}
+    .modal-close:hover{background:var(--sage);color:var(--forest);}
+    .detail-row{display:flex;justify-content:space-between;font-size:.875rem;padding:.55rem 0;border-bottom:1px solid var(--border);}
+    .detail-row:last-child{border-bottom:none;}
+    .detail-label{color:var(--gray);}
+    .detail-val{font-weight:500;color:var(--charcoal);text-align:right;}
+
+    /* FOOTER */
+    footer{background:var(--charcoal);color:var(--white);padding:5rem 4rem 2rem;}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:4rem;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:2rem;max-width:1280px;margin-left:auto;margin-right:auto;}
+    .f-logo{font-family:var(--font-d);font-size:1.9rem;font-weight:700;color:var(--white);margin-bottom:.85rem;}
+    .f-logo .dot{color:var(--mint);}
+    .f-desc{font-size:.875rem;color:rgba(255,255,255,.38);line-height:1.75;margin-bottom:1.5rem;}
+    .f-socials{display:flex;gap:.6rem;}
+    .f-social{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:rgba(255,255,255,.55);transition:all .2s;}
+    .f-social:hover{border-color:var(--mint);background:rgba(93,202,165,.1);color:var(--mint);}
+    .f-col-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1.1rem;}
+    .f-links{display:flex;flex-direction:column;gap:.7rem;}
+    .f-links a{font-size:.875rem;color:rgba(255,255,255,.55);transition:color .2s;}
+    .f-links a:hover{color:var(--mint);}
+    .f-bottom{display:flex;justify-content:space-between;align-items:center;max-width:1280px;margin:0 auto;}
+    .f-copy{font-size:.78rem;color:rgba(255,255,255,.22);}
+
+    .scroll-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--forest);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;z-index:500;opacity:0;pointer-events:none;transition:all .3s;box-shadow:var(--shadow-md);}
+    .scroll-top.visible{opacity:1;pointer-events:auto;}
+    .scroll-top:hover{background:var(--forest-light);transform:translateY(-2px);}
+    .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.6rem;}
+    .toast{display:flex;align-items:center;gap:.75rem;padding:.85rem 1.1rem;background:var(--charcoal);color:var(--white);border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease;border-left:3px solid var(--mint);min-width:240px;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}.reveal-d3{transition-delay:.24s}.reveal-d4{transition-delay:.32s}
+
+    @media(max-width:1024px){
+      .navbar{padding:0 2rem;}.page-header{padding:calc(var(--nav-h)+3rem) 2rem 4rem;}
+      .main{padding:3rem 2rem;}.stats-grid{grid-template-columns:1fr 1fr;}
+      footer{padding:4rem 2rem 1.5rem;}.footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem;}
+    }
+    @media(max-width:768px){
+      .navbar{padding:0 1.25rem;}.nav-links,.nav-btn{display:none;}.hamburger{display:flex;}
+      .page-header{padding:calc(var(--nav-h)+2rem) 1.25rem 3rem;}.main{padding:2.5rem 1.25rem;}
+      .stats-grid{grid-template-columns:1fr 1fr;}.filter-row{flex-direction:column;align-items:stretch;}
+      .tab-nav{overflow-x:auto;}.search-input{width:100%;}
+      .order-foot{flex-direction:column;align-items:flex-start;}
+      footer{padding:3rem 1.25rem 1.25rem;}.footer-grid{grid-template-columns:1fr;gap:2rem;}
+      .f-bottom{flex-direction:column;gap:.5rem;text-align:center;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="index.html">Beranda</a><a href="04-catalog.html">Katalog</a>
+  <a href="02-articles.html">Artikel</a><a href="06-cart.html">Keranjang</a><a href="#">Akun</a>
+</div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">Tumbuh<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="04-catalog.html">Katalog</a></li>
+    <li><a href="02-articles.html">Artikel</a></li>
+    <li><a href="#">Tentang</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="06-cart.html" class="nav-cart">🛒<span class="nav-cart-count">3</span></a>
+    <a href="#" class="nav-btn">Masuk</a>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="ph-decor">📋</div>
+  <div class="ph-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Beranda</a><span>›</span>
+      <span style="color:rgba(255,255,255,.65);">Riwayat Transaksi</span>
+    </div>
+    <p class="section-tag">Akun Saya</p>
+    <h1>Riwayat <em>Transaksi</em></h1>
+    <p>Pantau semua pesanan dan status pengirimanmu di sini.</p>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- STAT CARDS -->
+  <div class="stats-grid reveal">
+    <div class="stat-card">
+      <div class="stat-icon si-green">📦</div>
+      <div>
+        <div class="stat-label">Total Pesanan</div>
+        <div class="stat-val">12</div>
+        <div class="stat-note">Sepanjang 2026</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-amber">⏳</div>
+      <div>
+        <div class="stat-label">Dalam Proses</div>
+        <div class="stat-val">2</div>
+        <div class="stat-note">Sedang dikirim</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-blue">✅</div>
+      <div>
+        <div class="stat-label">Selesai</div>
+        <div class="stat-val">9</div>
+        <div class="stat-note stat-up">↑ dari 6 bulan lalu</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-purple">💚</div>
+      <div>
+        <div class="stat-label">Total Belanja</div>
+        <div class="stat-val" style="font-size:1.25rem;">Rp 2,4jt</div>
+        <div class="stat-note">Hemat Rp 180rb dari promo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTER TABS + SEARCH -->
+  <div class="filter-row reveal">
+    <div class="tab-nav" id="tabNav">
+      <button class="tab-btn active" data-status="semua" onclick="filterOrders(this)">Semua (12)</button>
+      <button class="tab-btn" data-status="diproses" onclick="filterOrders(this)">Diproses (1)</button>
+      <button class="tab-btn" data-status="dikirim" onclick="filterOrders(this)">Dikirim (1)</button>
+      <button class="tab-btn" data-status="selesai" onclick="filterOrders(this)">Selesai (9)</button>
+      <button class="tab-btn" data-status="dibatalkan" onclick="filterOrders(this)">Dibatalkan (1)</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Cari nomor pesanan..." id="orderSearch">
+    </div>
+  </div>
+
+  <!-- ORDERS LIST -->
+  <div class="orders-list" id="ordersList">
+
+    <!-- ORDER 1: DIKIRIM -->
+    <div class="order-card reveal" data-status="dikirim">
+      <div class="order-head">
+        <div class="order-id-wrap">
+          <div class="order-id">#TBH-20260517-084</div>
+          <div class="order-date">17 Mei 2026 · SiCepat Reguler</div>
+        </div>
+        <span class="badge badge-info">🚚 Dalam Pengiriman</span>
+      </div>
+      <div class="order-items-row">
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);">🪴</div>
+          <div class="chip-info"><div class="chip-name">Monstera Deliciosa</div><div class="chip-variant">Medium · 1x</div></div>
+        </div>
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#E1F5EE,#5DCAA5);">🌿</div>
+          <div class="chip-info"><div class="chip-name">Pothos Golden</div><div class="chip-variant">Mini · 2x</div></div>
+        </div>
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#FDF3E0,#FAC775);">🌵</div>
+          <div class="chip-info"><div class="chip-name">Kaktus Saguaro</div><div class="chip-variant">Mini · 1x</div></div>
+        </div>
+      </div>
+      <!-- TRACKING -->
+      <div class="tracking-wrap show" id="tracking-084">
+        <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:1rem;">Tracking Pesanan</div>
+        <div class="tl-row">
+          <div class="tl-step done"><div class="tl-dot"></div><div class="tl-label">Dikonfirmasi</div><div class="tl-time">17 Mei 10:22</div></div>
+          <div class="tl-line done"></div>
+          <div class="tl-step done"><div class="tl-dot"></div><div class="tl-label">Dikemas</div><div class="tl-time">17 Mei 14:00</div></div>
+          <div class="tl-line done"></div>
+          <div class="tl-step active"><div class="tl-dot"></div><div class="tl-label">Dalam Perjalanan</div><div class="tl-time">18 Mei 08:30</div></div>
+          <div class="tl-line"></div>
+          <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">Tiba di Tujuan</div><div class="tl-time">Est. 19 Mei</div></div>
+        </div>
+      </div>
+      <div class="order-foot">
+        <div class="order-total-wrap">
+          <div class="order-total-label">Total Pembayaran</div>
+          <div class="order-total">Rp 419.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-action-ghost" onclick="showToast('Resi: SICEPAT1234567890 📦')">📦 Lacak Paket</button>
+          <button class="btn-action btn-action-ghost" onclick="openDetail('084')">Detail</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER 2: DIPROSES -->
+    <div class="order-card reveal reveal-d1" data-status="diproses">
+      <div class="order-head">
+        <div class="order-id-wrap">
+          <div class="order-id">#TBH-20260515-071</div>
+          <div class="order-date">15 Mei 2026 · JNE YES</div>
+        </div>
+        <span class="badge badge-warning">⏳ Sedang Dikemas</span>
+      </div>
+      <div class="order-items-row">
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#E8F4F8,#9FD6E8);">🪴</div>
+          <div class="chip-info"><div class="chip-name">Calathea Orbifolia</div><div class="chip-variant">Medium · 1x</div></div>
+        </div>
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#F5EBF8,#D4A8E0);">🌸</div>
+          <div class="chip-info"><div class="chip-name">Anthurium Pink</div><div class="chip-variant">Large · 1x</div></div>
+        </div>
+      </div>
+      <div class="order-foot">
+        <div class="order-total-wrap">
+          <div class="order-total-label">Total Pembayaran</div>
+          <div class="order-total">Rp 450.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-action-red" onclick="showToast('Permintaan pembatalan dikirim','error')">Batalkan</button>
+          <button class="btn-action btn-action-ghost" onclick="openDetail('071')">Detail</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER 3: SELESAI -->
+    <div class="order-card reveal reveal-d2" data-status="selesai">
+      <div class="order-head">
+        <div class="order-id-wrap">
+          <div class="order-id">#TBH-20260428-052</div>
+          <div class="order-date">28 April 2026 · SiCepat Reguler</div>
+        </div>
+        <span class="badge badge-success">✅ Selesai</span>
+      </div>
+      <div class="order-items-row">
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);">🌱</div>
+          <div class="chip-info"><div class="chip-name">Lidah Mertua</div><div class="chip-variant">Medium · 2x</div></div>
+        </div>
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#E1F5EE,#5DCAA5);">🌿</div>
+          <div class="chip-info"><div class="chip-name">Pakis Boston</div><div class="chip-variant">Mini · 1x</div></div>
+        </div>
+        <div class="order-more">+1 produk lainnya</div>
+      </div>
+      <div class="order-foot">
+        <div class="order-total-wrap">
+          <div class="order-total-label">Total Pembayaran</div>
+          <div class="order-total">Rp 355.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-action-mint" onclick="showToast('Terima kasih ulasannya! ⭐')">⭐ Beri Ulasan</button>
+          <button class="btn-action btn-action-ghost" onclick="showToast('Produk ditambahkan ke keranjang 🛒')">🔄 Beli Lagi</button>
+          <button class="btn-action btn-action-ghost" onclick="openDetail('052')">Detail</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER 4: SELESAI -->
+    <div class="order-card reveal reveal-d3" data-status="selesai">
+      <div class="order-head">
+        <div class="order-id-wrap">
+          <div class="order-id">#TBH-20260410-039</div>
+          <div class="order-date">10 April 2026 · JNE Reguler</div>
+        </div>
+        <span class="badge badge-success">✅ Selesai</span>
+      </div>
+      <div class="order-items-row">
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#FDF3E0,#EF9F27);">🌵</div>
+          <div class="chip-info"><div class="chip-name">Kaktus Saguaro Mini</div><div class="chip-variant">Mini · 3x</div></div>
+        </div>
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#FDF3E0,#FAC775);">🏺</div>
+          <div class="chip-info"><div class="chip-name">Pot Terracotta</div><div class="chip-variant">1x</div></div>
+        </div>
+      </div>
+      <div class="order-foot">
+        <div class="order-total-wrap">
+          <div class="order-total-label">Total Pembayaran</div>
+          <div class="order-total">Rp 210.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-action-ghost" onclick="showToast('Nota dicetak 🖨️')">🖨️ Cetak Nota</button>
+          <button class="btn-action btn-action-ghost" onclick="showToast('Produk ditambahkan ke keranjang 🛒')">🔄 Beli Lagi</button>
+          <button class="btn-action btn-action-ghost" onclick="openDetail('039')">Detail</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER 5: DIBATALKAN -->
+    <div class="order-card reveal reveal-d4" data-status="dibatalkan">
+      <div class="order-head">
+        <div class="order-id-wrap">
+          <div class="order-id">#TBH-20260320-018</div>
+          <div class="order-date">20 Maret 2026 · JNE Reguler</div>
+        </div>
+        <span class="badge badge-error">✕ Dibatalkan</span>
+      </div>
+      <div class="order-items-row">
+        <div class="order-item-chip">
+          <div class="chip-thumb" style="background:linear-gradient(135deg,#E1F5EE,#9FE1CB);">🌳</div>
+          <div class="chip-info"><div class="chip-name">Fiddle Leaf Fig</div><div class="chip-variant">Large · 1x</div></div>
+        </div>
+      </div>
+      <div class="order-foot">
+        <div class="order-total-wrap">
+          <div class="order-total-label">Total Pesanan</div>
+          <div class="order-total" style="color:var(--gray);text-decoration:line-through;">Rp 305.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-action-ghost" onclick="showToast('Alasan: stok habis saat order diproses','info')">Lihat Alasan</button>
+          <button class="btn-action btn-action-ghost" onclick="showToast('Produk ditambahkan ke keranjang 🛒')">🔄 Beli Lagi</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">📋</div>
+    <h3>Tidak ada pesanan ditemukan</h3>
+    <p>Coba pilih kategori lain atau cari dengan nomor pesanan yang berbeda.</p>
+    <a href="04-catalog.html" style="margin-top:.75rem;display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.75rem;background:var(--forest);color:var(--white);border-radius:var(--r-full);font-size:.875rem;font-weight:500;transition:all .2s;">🌿 Mulai Belanja</a>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination reveal" style="margin-top:2.5rem;">
+    <button class="pg-btn disabled">←</button>
+    <button class="pg-btn active">1</button>
+    <button class="pg-btn">2</button>
+    <button class="pg-btn">→</button>
+  </div>
+
+</main>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Detail Pesanan</div>
+        <div style="font-size:.78rem;color:var(--gray);margin-top:.2rem;" id="modal-order-id">#TBH-20260517-084</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+      <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:.75rem;">Info Pesanan</div>
+      <div class="detail-row"><span class="detail-label">Status</span><span class="detail-val" id="modal-status">–</span></div>
+      <div class="detail-row"><span class="detail-label">Tanggal Order</span><span class="detail-val" id="modal-date">–</span></div>
+      <div class="detail-row"><span class="detail-label">Metode Bayar</span><span class="detail-val">BCA Virtual Account</span></div>
+      <div class="detail-row"><span class="detail-label">Kurir</span><span class="detail-val" id="modal-kurir">–</span></div>
+      <div class="detail-row"><span class="detail-label">No. Resi</span><span class="detail-val" id="modal-resi">–</span></div>
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+      <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:.75rem;">Alamat Pengiriman</div>
+      <div style="font-size:.875rem;color:var(--charcoal-lt);line-height:1.65;">Andy Pratama<br>Jl. Raya Gubeng No. 18, Surabaya, Jawa Timur, 60281<br>082134567890</div>
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+      <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:.75rem;">Rincian Harga</div>
+      <div class="detail-row"><span class="detail-label">Subtotal</span><span class="detail-val" id="modal-subtotal">–</span></div>
+      <div class="detail-row"><span class="detail-label">Ongkos Kirim</span><span class="detail-val" id="modal-ship">–</span></div>
+      <div class="detail-row"><span class="detail-label">Diskon</span><span class="detail-val" style="color:var(--mint);">- Rp 0</span></div>
+      <div class="detail-row" style="font-weight:600;"><span class="detail-label" style="color:var(--charcoal);font-weight:600;">Total</span><span class="detail-val" style="font-family:var(--font-d);font-size:1.1rem;color:var(--forest);" id="modal-total">–</span></div>
+    </div>
+
+    <button class="btn-action btn-action-ghost" style="width:100%;justify-content:center;padding:.85rem;" onclick="showToast('Nota diunduh 🖨️');closeModal()">🖨️ Unduh Nota PDF</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo">Tumbuh<span class="dot">.</span></div>
+      <p class="f-desc">Menghadirkan keindahan alam ke dalam ruang hidupmu. Tanaman hias pilihan, dikirim dengan cinta ke seluruh Indonesia.</p>
+      <div class="f-socials"><a class="f-social" href="#">📷</a><a class="f-social" href="#">🐦</a><a class="f-social" href="#">💼</a><a class="f-social" href="#">▶️</a></div>
+    </div>
+    <div><div class="f-col-title">Belanja</div><ul class="f-links"><li><a href="04-catalog.html">Katalog</a></li><li><a href="06-cart.html">Keranjang</a></li></ul></div>
+    <div><div class="f-col-title">Akun</div><ul class="f-links"><li><a href="08-history.html">Riwayat Transaksi</a></li></ul></div>
+    <div><div class="f-col-title">Bantuan</div><ul class="f-links"><li><a href="#">FAQ</a></li><li><a href="#">Pengiriman</a></li><li><a href="#">Pengembalian</a></li></ul></div>
+  </div>
+  <div class="f-bottom">
+    <div class="f-copy">© 2026 Tumbuh. Semua hak dilindungi.</div>
+    <div class="f-copy">Dibuat dengan 🌿 di Indonesia</div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop">↑</button>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+  // CURSOR
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function anim(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
+  });
+
+  // NAVBAR
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',()=>{
+    navbar.classList.toggle('scrolled',scrollY>60);
+    document.getElementById('scrollTop').classList.toggle('visible',scrollY>400);
+  },{passive:true});
+
+  // MOBILE NAV
+  const mobileNav=document.getElementById('mobileNav');
+  document.getElementById('hamburger').addEventListener('click',()=>{mobileNav.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('mobileClose').addEventListener('click',()=>{mobileNav.classList.remove('open');document.body.style.overflow='';});
+  document.getElementById('scrollTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  // SCROLL REVEAL
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // TOAST
+  function showToast(msg, type='success'){
+    const tw=document.getElementById('toastWrap');
+    const t=document.createElement('div');
+    t.className='toast';
+    const icon = type==='error'?'❌':type==='info'?'ℹ️':'✅';
+    t.innerHTML=`<span>${icon}</span><span>${msg}</span>`;
+    tw.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},3000);
+  }
+
+  // FILTER ORDERS
+  const orders = document.querySelectorAll('.order-card');
+  function filterOrders(btn){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const status = btn.dataset.status;
+    let visible=0;
+    orders.forEach(card=>{
+      const show = status==='semua' || card.dataset.status===status;
+      card.style.display = show?'':'none';
+      if(show) visible++;
+    });
+    document.getElementById('emptyState').classList.toggle('show', visible===0);
+  }
+
+  // SEARCH
+  document.getElementById('orderSearch').addEventListener('input', e=>{
+    const q = e.target.value.trim().toLowerCase();
+    let visible=0;
+    orders.forEach(card=>{
+      const id = card.querySelector('.order-id').textContent.toLowerCase();
+      const show = !q || id.includes(q);
+      card.style.display = show?'':'none';
+      if(show) visible++;
+    });
+    document.getElementById('emptyState').classList.toggle('show', visible===0);
+  });
+
+  // PAGINATION
+  document.querySelectorAll('.pg-btn:not(.disabled)').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(['←','→'].includes(btn.textContent.trim()))return;
+      document.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // ORDER DETAIL MODAL
+  const orderData = {
+    '084':{ status:'🚚 Dalam Pengiriman', date:'17 Mei 2026 · 10:22', kurir:'SiCepat Reguler', resi:'SICEPAT1234567890', subtotal:'Rp 384.000', ship:'Rp 35.000', total:'Rp 419.000' },
+    '071':{ status:'⏳ Sedang Dikemas',   date:'15 Mei 2026 · 09:15', kurir:'JNE YES',          resi:'Belum tersedia',  subtotal:'Rp 395.000', ship:'Rp 55.000', total:'Rp 450.000' },
+    '052':{ status:'✅ Selesai',          date:'28 Apr 2026 · 14:30', kurir:'SiCepat Reguler', resi:'SICEPAT9876543210', subtotal:'Rp 320.000', ship:'Rp 35.000', total:'Rp 355.000' },
+    '039':{ status:'✅ Selesai',          date:'10 Apr 2026 · 11:00', kurir:'JNE Reguler',      resi:'JNE1122334455',   subtotal:'Rp 185.000', ship:'Rp 25.000', total:'Rp 210.000' },
+  };
+
+  function openDetail(id){
+    const d = orderData[id];
+    if(!d) return;
+    document.getElementById('modal-order-id').textContent = `#TBH-202604xx-${id}`;
+    document.getElementById('modal-status').textContent   = d.status;
+    document.getElementById('modal-date').textContent     = d.date;
+    document.getElementById('modal-kurir').textContent    = d.kurir;
+    document.getElementById('modal-resi').textContent     = d.resi;
+    document.getElementById('modal-subtotal').textContent = d.subtotal;
+    document.getElementById('modal-ship').textContent     = d.ship;
+    document.getElementById('modal-total').textContent    = d.total;
+    document.getElementById('detailModal').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function closeModal(){
+    document.getElementById('detailModal').classList.remove('open');
+    document.body.style.overflow='';
+  }
+  document.getElementById('detailModal').addEventListener('click',function(e){
+    if(e.target===this) closeModal();
+  });
+</script>
+</body>
+</html>
