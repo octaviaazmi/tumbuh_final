@@ -581,12 +581,11 @@
       suspBtn.style.borderColor='#0F7A57';
     } else {
       suspBtn.textContent='⚠ Tangguhkan';
-      suspBtn.style.background=var_amber_dark;
-      suspBtn.style.borderColor=var_amber_dark;
+      suspBtn.style.background='#EF9F27';
+      suspBtn.style.borderColor='#EF9F27';
     }
     openModal('detailModal');
   }
-  const var_amber_dark='#EF9F27';
 
   function handleSuspend(){
     const u=users.find(x=>x.id===activeUserId);
